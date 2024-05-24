@@ -1,5 +1,6 @@
 package org.example.creww.user.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.user.dto.UserLoginRequest;
@@ -28,14 +29,6 @@ public class UserController {
         userService.signup(userSignUpRequest);
         return ResponseEntity.ok().body("회원가입 성공");
     }
-//    @PostMapping("/login")
-//    public ResponseEntity<UserLoginResponse> login(
-//        @RequestBody UserLoginRequest userLoginRequest,
-//        HttpServletResponse response
-//    ){
-//      UserLoginResponse userLoginResponse = userService.login(userLoginRequest,response);
-//      return ResponseEntity.ok().body(userLoginResponse);
-//}
     @PostMapping("/login")
     public UserLoginResponse login(
         @RequestBody UserLoginRequest userLoginRequest,
@@ -45,4 +38,5 @@ public class UserController {
         response.setHeader("Authorization", "Bearer " + userLoginResponse.getToken());
         return userLoginResponse;
     }
+
 }

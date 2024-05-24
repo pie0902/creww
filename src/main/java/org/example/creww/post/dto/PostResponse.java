@@ -14,12 +14,14 @@ public class PostResponse {
     private Long userId;
     private String username;
     private LocalDateTime createdAt;
-    public PostResponse(Long id,String title,String content,Long userId,String username,LocalDateTime createdAt){
+    private int views;
+    public PostResponse(Long id,String title,String content,Long userId,String username,LocalDateTime createdAt,int views){
         this.id = id;
         this.title = title;
         this.content = content;
         this.userId = userId;
         this.username = username;
         this.createdAt = createdAt;
+        this.views = views;
     }
 }

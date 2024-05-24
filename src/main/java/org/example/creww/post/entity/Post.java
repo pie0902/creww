@@ -22,11 +22,15 @@ public class Post extends BaseEntity {
     private String content;
     private Long userId;
     private Long boardId;
-
+    private int views = 0;
     public Post(String title, String content,Long userId,Long boardId) {
         this.title = title;
         this.content = content;
         this.userId = userId;
         this.boardId = boardId;
     }
+    public void setViews(int views){
+        this.views = views;
+    }
+
 }

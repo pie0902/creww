@@ -46,7 +46,7 @@ public class PostService {
         //post 객체 저장
         postRepository.save(post);
         //postResponse DTO 생성
-        PostResponse postResponse = new PostResponse(post.getId(),post.getTitle(),post.getContent(),tokenUserId,username,post.getCreatedAt());
+        PostResponse postResponse = new PostResponse(post.getId(),post.getTitle(),post.getContent(),tokenUserId,username,post.getCreatedAt(),post.getViews());
         //postResponse DTO 반환
         return postResponse;
     }
@@ -58,7 +58,7 @@ public class PostService {
          String username = userRepository.findById(post.getUserId())
              .map(User::getUsername)
              .orElse("유저 없음");
-         return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getUserId(), username, post.getCreatedAt());
+         return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getUserId(), username, post.getCreatedAt(),post.getViews());
         });
     }
     public PostResponse getPost(Long boardId,Long postId) {
@@ -67,7 +67,9 @@ public class PostService {
             throw new RuntimeException("올바른 요청이 아닙니다");
         }
         User user = userRepository.findById(post.getUserId()).orElseThrow(()->new IllegalArgumentException("없는 유저"));
-        PostResponse postResponse = new PostResponse(post.getId(),post.getTitle(),post.getContent(),post.getUserId(),user.getUsername(),post.getCreatedAt());
+        post.setViews(post.getViews()+1);
+        postRepository.save(post);
+        PostResponse postResponse = new PostResponse(post.getId(),post.getTitle(),post.getContent(),post.getUserId(),user.getUsername(),post.getCreatedAt(),post.getViews());
         return postResponse;
 
     }
