@@ -5,15 +5,26 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtils {
-    private static final String Secret_Key = "asdfasdfasdfasdf";
+
+
+    @Value("${jwt_key}")
+    private String jwtSecret;
+    private static String Secret_Key;
     private static final long EXPIRATION_TIME = 86400000;
+
+    @PostConstruct
+    public void init() {
+        Secret_Key = jwtSecret;
+    }
 
     public String generateToken(Long userId) {
         return JWT.create()
