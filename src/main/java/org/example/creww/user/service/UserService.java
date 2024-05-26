@@ -2,13 +2,18 @@ package org.example.creww.user.service;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.jwt.JwtUtils;
 import org.example.creww.user.dto.UserLoginRequest;
 import org.example.creww.user.dto.UserLoginResponse;
+import org.example.creww.user.dto.UserSearchResponse;
 import org.example.creww.user.dto.UserSignUpRequest;
 import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +23,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+
     public void signup(
         UserSignUpRequest userSignUpRequest
     ) {
@@ -47,6 +55,18 @@ public class UserService {
         String token = jwtUtils.generateToken(user.getId());
         return new UserLoginResponse(token, user);
     }
+
+    public List<UserSearchResponse> searchUsersByEmail(String email) {
+        logger.info("Searching for users with email containing: {}", email);
+        List<User> users = userRepository.findByEmailContaining(email);
+        logger.info("Found {} users", users.size());
+        return users.stream()
+            .map(user -> new UserSearchResponse(user.getId(),user.getUsername(),user.getEmail()))
+            .collect(Collectors.toList());
+    }
+
+
+
 //    private void setTokenCookie(
 //        HttpServletResponse response,
 //        String token

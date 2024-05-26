@@ -13,6 +13,8 @@ import org.example.creww.post.entity.Post;
 import org.example.creww.post.repository.PostRepository;
 import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PostService {
+    private static final Logger logger = LoggerFactory.getLogger(PostService.class);
+
     private final PostRepository postRepository;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
@@ -62,6 +66,7 @@ public class PostService {
         });
     }
     public PostResponse getPost(Long boardId,Long postId) {
+        logger.info("getPost called with boardId: {} and postId: {}", boardId, postId);
         Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("post 찾을 수 없음"));
         if(!post.getBoardId().equals(boardId)){
             throw new RuntimeException("올바른 요청이 아닙니다");

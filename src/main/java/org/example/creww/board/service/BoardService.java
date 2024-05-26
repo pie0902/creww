@@ -13,6 +13,7 @@ import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
 import org.example.creww.userBoard.entity.UserBoard;
 import org.example.creww.userBoard.repository.UserBoardRepository;
+import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,7 @@ public class BoardService {
         Board board = new Board(req.getBoardName(), req.getDescription(), ownerId);
         boardRepository.save(board);
         List<Long> userIds = req.getUserIds();
-        //userIds.add(ownerId);
+        userIds.add(ownerId);
         for (Long userId : userIds) {
             if (userRepository.existsById(userId)) {
                 UserBoard userBoard = new UserBoard(userId, board.getId());
@@ -39,7 +40,7 @@ public class BoardService {
         }
     }
 
-    public List<BoardResponse> getBoard(String token) {
+    public List<BoardResponse> getBoards(String token) {
         if (token == null || !jwtUtils.validateToken(token)) {
             throw new RuntimeException("Invalid token");
         }
@@ -54,5 +55,15 @@ public class BoardService {
                 return new BoardResponse(board.getName(), board.getId(), board.getDescription(),ownerName);
             })
             .collect(Collectors.toList());
+    }
+
+    public BoardResponse getBoard(String token,Long boardId) {
+        if (token == null || !jwtUtils.validateToken(token)) {
+            throw new RuntimeException("Invalid token");
+        }
+        Board board = boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 게시판"));
+        User user = userRepository.findById(board.getOwnerId()).orElseThrow(()->new IllegalIdentifierException("존재하지 않는 유저"));
+        BoardResponse boardResponse = new BoardResponse(board.getName(),board.getId(),board.getDescription(),user.getUsername());
+        return boardResponse;
     }
 }

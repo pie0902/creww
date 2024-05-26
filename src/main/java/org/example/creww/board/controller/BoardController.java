@@ -11,10 +11,10 @@ import org.example.creww.jwt.JwtUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -36,7 +36,16 @@ public class BoardController {
     @GetMapping("")
     public ResponseEntity<List<BoardResponse>> getBoards(HttpServletRequest request) {
         String token = jwtUtils.getTokenFromRequest(request);
-        List<BoardResponse> boards = boardService.getBoard(token);
+        List<BoardResponse> boards = boardService.getBoards(token);
         return ResponseEntity.ok().body(boards);
+    }
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardResponse> getBoard(
+        HttpServletRequest request,
+        @PathVariable Long boardId
+    ) {
+        String token = jwtUtils.getTokenFromRequest(request);
+        BoardResponse boardResponse = boardService.getBoard(token,boardId);
+        return ResponseEntity.ok().body(boardResponse);
     }
 }
