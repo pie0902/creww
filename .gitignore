@@ -35,3 +35,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# .env 파일 무시
+.env
+
+# Docker Compose 파일 무시
+docker-compose.yml

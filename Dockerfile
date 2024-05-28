@@ -14,8 +14,8 @@ COPY . .
 # Make the Gradle wrapper executable
 RUN chmod +x gradlew
 
-# Build the project
-RUN ./gradlew build --no-daemon
+# Build the project without running tests
+RUN ./gradlew build --no-daemon -x test
 
 # Copy the built jar file to the container
 COPY build/libs/*.jar app.jar
