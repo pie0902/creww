@@ -1,14 +1,16 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.5'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '2.5.7'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
-group = 'org.example'
+group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 configurations {
@@ -24,19 +26,68 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
-    //jwt
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
     implementation 'com.auth0:java-jwt:3.19.2'
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.27'  // 수정된 부분
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
-    //시큐리티
+    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-crypto'
-}
 
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+
+}
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:-options"
+}
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+
+//plugins {
+//    id 'java'
+//    id 'org.springframework.boot' version '3.2.5'
+//    id 'io.spring.dependency-management' version '1.1.4'
+//}
+//
+//group = 'org.example'
+//version = '0.0.1-SNAPSHOT'
+//
+//java {
+//    sourceCompatibility = '17'
+//}
+//
+//configurations {
+//    compileOnly {
+//        extendsFrom annotationProcessor
+//    }
+//}
+//
+//repositories {
+//    mavenCentral()
+//}
+//
+//dependencies {
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-web'
+//    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+//    //jwt
+//    implementation 'com.auth0:java-jwt:3.19.2'
+//    compileOnly 'org.projectlombok:lombok'
+//    runtimeOnly 'com.mysql:mysql-connector-j'
+//    annotationProcessor 'org.projectlombok:lombok'
+//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+//    //시큐리티
+//    implementation 'org.springframework.boot:spring-boot-starter-security'
+//    implementation 'org.springframework.security:spring-security-crypto'
+//}
+//
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}

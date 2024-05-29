@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  app:
+  creww:
     build: .
     environment:
       - DB_NAME=${DB_NAME}
@@ -11,12 +11,12 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      - my_database
 
-  db:
+  my_database:
     image: mysql:8.0
     environment:
-      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_ROOT_PASSWORD=example_secret
       - MYSQL_DATABASE=${DB_NAME}
     ports:
       - "3306:3306"

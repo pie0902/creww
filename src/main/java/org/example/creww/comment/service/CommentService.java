@@ -1,8 +1,9 @@
 package org.example.creww.comment.service;
 
-import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.comment.dto.CommentRequest;
 import org.example.creww.comment.dto.CommentResponse;

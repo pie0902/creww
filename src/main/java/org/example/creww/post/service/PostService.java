@@ -1,10 +1,11 @@
 package org.example.creww.post.service;
 
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.Cookie;
+//import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.jwt.JwtUtils;
 import org.example.creww.post.dto.PostRequest;

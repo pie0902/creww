@@ -1,8 +1,9 @@
 package org.example.creww.board.controller;
 
 
-import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.board.dto.BoardRequest;
 import org.example.creww.board.dto.BoardResponse;

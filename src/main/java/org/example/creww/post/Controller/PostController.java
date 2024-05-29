@@ -1,7 +1,8 @@
 package org.example.creww.post.Controller;
 
-import jakarta.servlet.http.HttpServletRequest;
+//import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.post.dto.PostRequest;
 import org.example.creww.post.dto.PostResponse;
