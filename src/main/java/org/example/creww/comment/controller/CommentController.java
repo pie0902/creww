@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/boards/{boardId}/posts/{postId}/comments")
+//@RequestMapping("/boards/{boardId}/posts/{postId}/comments")
+@RequestMapping("/api/boards/{boardId}/posts/{postId}/comments")
 public class CommentController {
     private final CommentService commentService;
     //댓글 생성

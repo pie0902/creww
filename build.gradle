@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
     implementation 'com.auth0:java-jwt:3.19.2'
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'mysql:mysql-connector-java:8.0.27'  // 수정된 부분
+    runtimeOnly 'mysql:mysql-connector-java:8.0.29'  // 수정된 부분
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'

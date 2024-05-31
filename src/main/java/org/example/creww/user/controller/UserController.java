@@ -1,6 +1,7 @@
 package org.example.creww.user.controller;
 
 //import jakarta.servlet.http.HttpServletResponse;
+
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,6 @@ import org.example.creww.user.dto.UserLoginRequest;
 import org.example.creww.user.dto.UserLoginResponse;
 import org.example.creww.user.dto.UserSearchResponse;
 import org.example.creww.user.dto.UserSignUpRequest;
-import org.example.creww.user.entity.User;
 import org.example.creww.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+//@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class UserController {
 
     private final UserService userService;

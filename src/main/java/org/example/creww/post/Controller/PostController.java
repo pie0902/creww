@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/boards")
+//@RequestMapping("/boards")
+@RequestMapping("/api/boards")
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
