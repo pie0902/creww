@@ -34,6 +34,8 @@ public class SecurityConfig {
             .sessionManagement(sessionManagement ->
                 sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 안함
             .authorizeHttpRequests(authorize -> authorize
+                // swagger uii
+                .antMatchers("/swagger-ui-custom.html", "/swagger-ui/**", "/custom-api-docs/**").permitAll() // Swagger 경로 허용
                 // 모든 요청을 허용
                 .anyRequest().permitAll()
             );
