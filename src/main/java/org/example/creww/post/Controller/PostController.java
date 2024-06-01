@@ -1,6 +1,7 @@
 package org.example.creww.post.Controller;
 
 //import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class PostController {
     private final PostService postService;
     //포스트 작성
     @PostMapping("/{boardId}/posts")
+    @ApiOperation(value = "게시글 생성", notes = "게시글을 생성 합니다.", tags = {"post-controller"})
     public ResponseEntity<PostResponse> createPost(
         @RequestBody PostRequest postRequest,
         @PathVariable Long boardId,
@@ -38,6 +40,7 @@ public class PostController {
     }
     //보드의 포스트 전부 조회
     @GetMapping("/{boardId}/posts")
+    @ApiOperation(value = "게시글 전체 조회", notes = "게시글을 전체 조회 합니다.", tags = {"post-controller"})
     public ResponseEntity<Page<PostResponse>> getPosts(
         @PathVariable Long boardId,
         @RequestParam(defaultValue = "0") int page,
@@ -48,6 +51,7 @@ public class PostController {
     }
     //포스트 단일 조회
     @GetMapping("/{boardId}/posts/{postId}")
+    @ApiOperation(value = "게시글 단일 조회", notes = "게시글을 단일 조회 합니다.", tags = {"post-controller"})
     public ResponseEntity<PostResponse> getPost(
         @PathVariable Long boardId,
         @PathVariable Long postId
@@ -57,6 +61,7 @@ public class PostController {
     }
 
     @DeleteMapping("/posts/{postId}")
+    @ApiOperation(value = "게시글 삭제", notes = "게시글을 삭제 합니다.", tags = {"post-controller"})
     public ResponseEntity<String> deletePost(
         @PathVariable Long postId,
         HttpServletRequest request

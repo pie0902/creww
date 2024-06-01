@@ -2,6 +2,7 @@ package org.example.creww.comment.controller;
 
 
 //import jakarta.servlet.http.HttpServletRequest;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
     private final CommentService commentService;
     //댓글 생성
+    @ApiOperation(value = "댓글 생성", notes = "댓글을 생성 합니다.", tags = {"comment-controller"})
     @PostMapping("")
     public ResponseEntity<CommentResponse> createComment(
         HttpServletRequest request,
@@ -35,6 +37,7 @@ public class CommentController {
         return ResponseEntity.ok().body(commentResponse);
     }
     //댓글 조회
+    @ApiOperation(value = "댓글 조회", notes = "댓글을 조회 합니다.", tags = {"comment-controller"})
     @GetMapping("")
     public ResponseEntity<List<CommentResponse>> getComments(
         HttpServletRequest request,
@@ -44,6 +47,7 @@ public class CommentController {
         List<CommentResponse> commentResponses = commentService.getComments(request, postId);
         return ResponseEntity.ok().body(commentResponses);
     }
+    @ApiOperation(value = "댓글 삭제", notes = "댓글을 삭제 합니다.", tags = {"comment-controller"})
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(
         HttpServletRequest request,

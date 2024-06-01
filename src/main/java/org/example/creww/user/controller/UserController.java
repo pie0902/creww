@@ -2,6 +2,7 @@ package org.example.creww.user.controller;
 
 //import jakarta.servlet.http.HttpServletResponse;
 
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class UserController {
     private final UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @PostMapping("/signup")
+    @ApiOperation(value = "회원가입", notes = "회원가입을 진행 합니다.", tags = {"user-controller"})
     public ResponseEntity<String> signup(
         @RequestBody UserSignUpRequest userSignUpRequest
     ) {
@@ -37,6 +39,7 @@ public class UserController {
         return ResponseEntity.ok().body("회원가입 성공");
     }
     @PostMapping("/login")
+    @ApiOperation(value = "로그인", notes = "로그인을 진행 합니다.", tags = {"user-controller"})
     public UserLoginResponse login(
         @RequestBody UserLoginRequest userLoginRequest,
         HttpServletResponse response
@@ -46,6 +49,7 @@ public class UserController {
         return userLoginResponse;
     }
     @GetMapping("/search")
+    @ApiOperation(value = "회원조회", notes = "회원을 조회 합니다.", tags = {"user-controller"})
     public ResponseEntity<List<UserSearchResponse>> searchUsersByEmail(@RequestParam String email) {
         logger.info("Received search request for email: {}", email);
         List<UserSearchResponse> users = userService.searchUsersByEmail(email);

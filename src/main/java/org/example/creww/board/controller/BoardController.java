@@ -3,6 +3,7 @@ package org.example.creww.board.controller;
 
 //import jakarta.servlet.http.HttpServletRequest;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BoardController {
     private final BoardService boardService;
     private final JwtUtils jwtUtils;
+    @ApiOperation(value = "게시판 생성", notes = "게시판을 생성합니다.", tags = {"board-controller"})
     @PostMapping("/create")
     public ResponseEntity<String> createBoard(HttpServletRequest request, @RequestBody BoardRequest boardRequest) {
         String token = jwtUtils.getTokenFromRequest(request);
@@ -37,12 +39,14 @@ public class BoardController {
         boardService.createBoard(creatorId,boardRequest);
         return ResponseEntity.ok().body("성공적으로 보드가 생성 되었습니다");
     }
+    @ApiOperation(value = "게시판 전체 조회", notes = "게시판을 전체 조회 합니다.", tags = {"board-controller"})
     @GetMapping("")
     public ResponseEntity<List<BoardResponse>> getBoards(HttpServletRequest request) {
         String token = jwtUtils.getTokenFromRequest(request);
         List<BoardResponse> boards = boardService.getBoards(token);
         return ResponseEntity.ok().body(boards);
     }
+    @ApiOperation(value = "게시판 단일 조회", notes = "게시판을 단일 조회 합니다.", tags = {"board-controller"})
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardResponse> getBoard(
         HttpServletRequest request,
