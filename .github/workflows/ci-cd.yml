@@ -24,6 +24,7 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t thunder0902/creww-backend:test .
+
       - name: Log in to Docker Hub
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}

@@ -14,6 +14,9 @@ COPY . .
 # Make the Gradle wrapper executable
 RUN chmod +x gradlew
 
+# Build the project using Gradle
+RUN ./gradlew build
+
 # Set JVM options
 ENV GRADLE_OPTS="-Xmx1024m -Xms512m -XX:MaxMetaspaceSize=512m"
 
