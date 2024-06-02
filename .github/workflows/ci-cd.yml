@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '1.8'
-          distribution: 'temurin'
+          distribution: 'adopt'
 
       - name: Set JAVA_HOME
         run: echo "JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> $GITHUB_ENV
@@ -32,7 +32,13 @@ jobs:
         run: docker build -t thunder0902/creww-backend:test .
 
       - name: Log in to Docker Hub
+        env:
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
       - name: Push Docker image
         run: docker push thunder0902/creww-backend:test
+
+      - name: Clean up Docker images
+        run: docker rmi thunder0902/creww-backend:test
