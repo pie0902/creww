@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '8'
-          distribution: 'adopt'
+          distribution: 'temurin'  # Eclipse Temurin 배포판 사용
 
       - name: Set JAVA_HOME
         run: echo "JAVA_HOME=$(/usr/libexec/java_home -v 1.8)" >> $GITHUB_ENV
@@ -26,7 +26,7 @@ jobs:
         run: java -version
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --gradle-version 6.8.3
 
       - name: Build Docker image
         run: docker build -t creww-backend:test .
