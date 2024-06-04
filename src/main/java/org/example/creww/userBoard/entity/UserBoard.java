@@ -21,9 +21,14 @@ public class UserBoard {
     private Long id;
     private Long userId;
     private Long boardId;
+    private boolean isExited = false;
 
     public UserBoard(Long userId, Long boardId) {
         this.userId = userId;
         this.boardId = boardId;
+    }
+    //게시판 나가기
+    public void setExited(){
+        this.isExited = true;
     }
 }

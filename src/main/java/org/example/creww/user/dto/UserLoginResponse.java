@@ -9,8 +9,10 @@ import org.example.creww.user.entity.User;
 public class UserLoginResponse {
     private String token;
     private User user;
-    public UserLoginResponse(String token,User user){
+    private String username;
+    public UserLoginResponse(String token,User user,String username){
         this.token = token;
         this.user = user;
+        this.username = username;
     }
 }
