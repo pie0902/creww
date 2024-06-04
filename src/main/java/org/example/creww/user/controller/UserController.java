@@ -4,6 +4,7 @@ package org.example.creww.user.controller;
 
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.user.dto.UserLoginRequest;
@@ -60,4 +61,12 @@ public class UserController {
         logger.info("Returning {} users", users.size());
         return ResponseEntity.ok(users);
     }
+    @GetMapping("/me")
+    @ApiOperation(value = "로그인 회원 조회", notes = "로그인 회원을 조회 합니다.", tags = {"user-controller"})
+    public ResponseEntity<UserLoginResponse> me(HttpServletRequest request) {
+        UserLoginResponse userLoginResponse = userService.me(request);
+        return ResponseEntity.ok().body(userLoginResponse);
+    }
+
+
 }
