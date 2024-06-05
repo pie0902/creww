@@ -2,7 +2,7 @@ package org.example.creww.board.controller;
 
 
 //import jakarta.servlet.http.HttpServletRequest;
-import io.swagger.annotations.Api;
+
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +61,7 @@ public class BoardController {
         BoardResponse boardResponse = boardService.getBoard(token,boardId);
         return ResponseEntity.ok().body(boardResponse);
     }
-<<<<<<< HEAD
+
     //방장 유저 초대
     @ApiOperation(value = "게시판 유저 초대", notes = "게시판에 유저를 초대합니다.", tags = {"board-controller"})
     @PostMapping("/{boardId}/addUser")
@@ -77,7 +77,7 @@ public class BoardController {
         boardService.addUser(token,boardAddUserRequest,boardId);
         return ResponseEntity.ok().body("성공적으로 초대가 되었습니다");
     }
-=======
+
 
     @PutMapping("/{boardId}")
     @ApiOperation(value = "게시판 탈퇴", notes = "게시판을 탈퇴 합니다.", tags = {"board-controller"})
@@ -89,10 +89,6 @@ public class BoardController {
         boardService.exitBoard(token,boardId);
         return ResponseEntity.ok().body("게시판을 탈퇴 했습니다.");
     }
-
-
-
-
 
 
     @DeleteMapping("/{boardId}")
@@ -112,8 +108,6 @@ public class BoardController {
 
 
 
-
->>>>>>> cb59ded4b93c7b825b029f76b5c7bf4c43d0cd03
 }
 
 
