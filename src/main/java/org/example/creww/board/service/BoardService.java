@@ -3,6 +3,7 @@ package org.example.creww.board.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.board.dto.BoardAddUserRequest;
 import org.example.creww.board.dto.BoardRequest;
@@ -41,12 +42,14 @@ public class BoardService {
         }
     }
 
-    public List<BoardResponse> getBoards(String token) {
+    public List<BoardResponse> getBoards(
+        String token
+    ) {
         if (token == null || !jwtUtils.validateToken(token)) {
             throw new RuntimeException("Invalid token");
         }
         Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
-        List<UserBoard> userBoards = userBoardRepository.findByUserId(userId);
+        List<UserBoard> userBoards = userBoardRepository.findByUserIdAndIsExitedFalse(userId);
         return userBoards.stream()
             .map(userBoard -> {
                 Board board = boardRepository.findById(userBoard.getBoardId())
@@ -58,10 +61,14 @@ public class BoardService {
             .collect(Collectors.toList());
     }
 
-    public BoardResponse getBoard(String token,Long boardId) {
+    public BoardResponse getBoard(
+        String token,
+        Long boardId
+    ) {
         if (token == null || !jwtUtils.validateToken(token)) {
             throw new RuntimeException("Invalid token");
         }
+<<<<<<< HEAD
         Board board = boardRepository.findById(boardId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판"));
         User user = userRepository.findById(board.getOwnerId())
@@ -90,9 +97,43 @@ public class BoardService {
             UserBoard userBoard = new UserBoard(id, board.getId());
             userBoardRepository.save(userBoard);
         }
+=======
+        Board board = boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 게시판"));
+
+        User user = userRepository.findById(board.getOwnerId()).orElseThrow(()->new IllegalIdentifierException("존재하지 않는 유저"));
+        BoardResponse boardResponse = new BoardResponse(board.getName(),board.getId(),board.getDescription(),user.getUsername());
+        return boardResponse;
+    }
+
+    //게시판 나가기
+    public void exitBoard(String token, Long boardId) {
+        if (token == null || !jwtUtils.validateToken(token)) {
+            throw new RuntimeException("Invalid token");
+        }
+        Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+        UserBoard userBoard = userBoardRepository.findByBoardIdAndUserId(boardId,userId).orElseThrow(()->new IllegalArgumentException("없는 테이블"));
+        userBoard.setExited();
+>>>>>>> cb59ded4b93c7b825b029f76b5c7bf4c43d0cd03
     }
 
 
 
+<<<<<<< HEAD
+=======
+    //관리자 게시판 삭제
+    public void deleteBoard(String token,Long boardId) {
+        if (token == null || !jwtUtils.validateToken(token)) {
+            throw new RuntimeException("Invalid token");
+        }
+        Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+        Board board = boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("없는 보드"));
+
+        if(!board.getOwnerId().equals(userId)) {
+            throw new RuntimeException("보드는 생성자만 삭제 가능합니다.");
+        }
+        boardRepository.delete(board);
+    }
+
+>>>>>>> cb59ded4b93c7b825b029f76b5c7bf4c43d0cd03
 
 }

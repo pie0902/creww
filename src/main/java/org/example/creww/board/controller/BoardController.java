@@ -12,11 +12,14 @@ import org.example.creww.board.dto.BoardRequest;
 import org.example.creww.board.dto.BoardResponse;
 import org.example.creww.board.service.BoardService;
 import org.example.creww.jwt.JwtUtils;
+import org.example.creww.userBoard.repository.UserBoardRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/boards")
 public class BoardController {
     private final BoardService boardService;
+    private final UserBoardRepository userBoardRepository;
     private final JwtUtils jwtUtils;
     @ApiOperation(value = "게시판 생성", notes = "게시판을 생성합니다.", tags = {"board-controller"})
     @PostMapping("/create")
@@ -57,6 +61,7 @@ public class BoardController {
         BoardResponse boardResponse = boardService.getBoard(token,boardId);
         return ResponseEntity.ok().body(boardResponse);
     }
+<<<<<<< HEAD
     //방장 유저 초대
     @ApiOperation(value = "게시판 유저 초대", notes = "게시판에 유저를 초대합니다.", tags = {"board-controller"})
     @PostMapping("/{boardId}/addUser")
@@ -72,4 +77,43 @@ public class BoardController {
         boardService.addUser(token,boardAddUserRequest,boardId);
         return ResponseEntity.ok().body("성공적으로 초대가 되었습니다");
     }
+=======
+
+    @PutMapping("/{boardId}")
+    @ApiOperation(value = "게시판 탈퇴", notes = "게시판을 탈퇴 합니다.", tags = {"board-controller"})
+    public ResponseEntity<String> exitBoard(
+        @PathVariable Long boardId,
+        HttpServletRequest request
+    ){
+        String token = jwtUtils.getTokenFromRequest(request);
+        boardService.exitBoard(token,boardId);
+        return ResponseEntity.ok().body("게시판을 탈퇴 했습니다.");
+    }
+
+
+
+
+
+
+    @DeleteMapping("/{boardId}")
+    @ApiOperation(value = "게시판 삭제", notes = "게시판을 삭제 합니다.", tags = {"board-controller"})
+    public ResponseEntity<String> deletePost(
+        @PathVariable Long boardId,
+        HttpServletRequest request
+    ) {
+        String token = jwtUtils.getTokenFromRequest(request);
+        try {
+            boardService.deleteBoard(token, boardId);
+            return ResponseEntity.ok().body("게시글이 성공적으로 삭제 되었습니다");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
+
+
+>>>>>>> cb59ded4b93c7b825b029f76b5c7bf4c43d0cd03
 }
+
+

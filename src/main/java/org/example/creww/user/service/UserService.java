@@ -4,6 +4,7 @@ package org.example.creww.user.service;
 //import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.jwt.JwtUtils;
 import org.example.creww.user.dto.UserLoginRequest;
@@ -14,6 +15,7 @@ import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,16 @@ public class UserService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    public UserLoginResponse me(HttpServletRequest request){
+        String token = jwtUtils.getTokenFromRequest(request);
+        if (token == null || !jwtUtils.validateToken(token)) {
+            throw new RuntimeException("Invalid token");
+        }
+        Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+        User user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 유저"));
+        UserLoginResponse userLoginResponse = new UserLoginResponse(token,user,user.getUsername());
+        return userLoginResponse;
+    }
 
 
     public void signup(
@@ -53,7 +65,7 @@ public class UserService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
         String token = jwtUtils.generateToken(user.getId());
-        return new UserLoginResponse(token, user);
+        return new UserLoginResponse(token, user,user.getUsername());
     }
 
     public List<UserSearchResponse> searchUsersByEmail(String email) {
