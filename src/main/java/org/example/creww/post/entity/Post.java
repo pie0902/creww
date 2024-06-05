@@ -39,5 +39,11 @@ public class Post extends BaseEntity {
     public void setViews(int views){
         this.views = views;
     }
+    public void updatePost(String title, String content,Long userId,Long boardId){
+        this.title = title;
+        this.content = content;
+        this.userId = userId;
+        this.boardId = boardId;
+    }
 
 }

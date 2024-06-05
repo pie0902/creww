@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.example.creww.board.dto.BoardAddUserRequest;
 import org.example.creww.board.dto.BoardRequest;
 import org.example.creww.board.dto.BoardResponse;
 import org.example.creww.board.service.BoardService;
@@ -55,5 +56,20 @@ public class BoardController {
         String token = jwtUtils.getTokenFromRequest(request);
         BoardResponse boardResponse = boardService.getBoard(token,boardId);
         return ResponseEntity.ok().body(boardResponse);
+    }
+    //방장 유저 초대
+    @ApiOperation(value = "게시판 유저 초대", notes = "게시판에 유저를 초대합니다.", tags = {"board-controller"})
+    @PostMapping("/{boardId}/addUser")
+    public ResponseEntity<String> addUser(
+        HttpServletRequest request,
+        @RequestBody BoardAddUserRequest boardAddUserRequest,
+        @PathVariable Long boardId
+    ) {
+        String token = jwtUtils.getTokenFromRequest(request);
+        if (token == null || !jwtUtils.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        boardService.addUser(token,boardAddUserRequest,boardId);
+        return ResponseEntity.ok().body("성공적으로 초대가 되었습니다");
     }
 }

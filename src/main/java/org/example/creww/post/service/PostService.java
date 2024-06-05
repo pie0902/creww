@@ -92,6 +92,24 @@ public class PostService {
 
     }
 
+    //업데이트
+    @Transactional
+    public void updatePost(Long boardId, Long postId, HttpServletRequest request,PostRequest postRequest) {
+        String token = jwtUtils.getTokenFromRequest(request);
+        //토큰 검증
+        if (!jwtUtils.isTokenValid(token)) {
+            throw new RuntimeException("토큰 이슈");
+        }
+        //userId 추출해서 Long으로 변경
+        Long tokenUserId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+        Post post = postRepository.findById(postId).orElseThrow(()->new IllegalArgumentException("없는 게시글"));
+        if(!boardId.equals(post.getBoardId())){
+            throw new RuntimeException("잘못된 게시글 입니다.");
+        }
+        if(!tokenUserId.equals(post.getUserId())) {
+            throw new RuntimeException("권한이 없습니다.");
+        }
+        post.updatePost(postRequest.getTitle(),postRequest.getContent(),tokenUserId,boardId);
 
-
+    }
 }

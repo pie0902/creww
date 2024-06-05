@@ -4,6 +4,7 @@ package org.example.creww.board.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.example.creww.board.dto.BoardAddUserRequest;
 import org.example.creww.board.dto.BoardRequest;
 import org.example.creww.board.dto.BoardResponse;
 import org.example.creww.board.entity.Board;
@@ -61,9 +62,37 @@ public class BoardService {
         if (token == null || !jwtUtils.validateToken(token)) {
             throw new RuntimeException("Invalid token");
         }
-        Board board = boardRepository.findById(boardId).orElseThrow(()->new IllegalArgumentException("존재하지 않는 게시판"));
-        User user = userRepository.findById(board.getOwnerId()).orElseThrow(()->new IllegalIdentifierException("존재하지 않는 유저"));
-        BoardResponse boardResponse = new BoardResponse(board.getName(),board.getId(),board.getDescription(),user.getUsername());
+        Board board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판"));
+        User user = userRepository.findById(board.getOwnerId())
+            .orElseThrow(() -> new IllegalIdentifierException("존재하지 않는 유저"));
+        BoardResponse boardResponse = new BoardResponse(board.getName(), board.getId(),
+            board.getDescription(), user.getUsername());
         return boardResponse;
     }
+    @Transactional
+    public void addUser(String token, BoardAddUserRequest boardAddUserRequest, Long boardId) {
+        if (token == null || !jwtUtils.validateToken(token)) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 보드"));
+        Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+
+        if (!board.getOwnerId().equals(userId)) {
+            throw new IllegalIdentifierException("방장만 회원 초대가 가능합니다.");
+        }
+
+        List<Long> userIds = boardAddUserRequest.getUserIds();
+        List<Long> existingUserIds = userRepository.findAllById(userIds).stream().map(User::getId).collect(Collectors.toList());
+
+        for (Long id : existingUserIds) {
+            UserBoard userBoard = new UserBoard(id, board.getId());
+            userBoardRepository.save(userBoard);
+        }
+    }
+
+
+
+
 }

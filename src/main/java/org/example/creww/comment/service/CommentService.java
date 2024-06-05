@@ -13,6 +13,7 @@ import org.example.creww.jwt.JwtUtils;
 import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -78,4 +79,39 @@ public class CommentService {
         }
         commentRepository.delete(comment);
     }
+    @Transactional
+    public void updateComment(
+        HttpServletRequest request,
+        Long postId,
+        Long commentId,
+        CommentRequest commentRequest
+    ) {
+        String token = jwtUtils.getTokenFromRequest(request);
+        //토큰 검증
+        if (!jwtUtils.isTokenValid(token)) {
+            throw new RuntimeException("토큰 이슈");
+        }
+        //userId 추출해서 Long으로 변경
+        Long tokenUserId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+        User user = userRepository.findById(tokenUserId)
+            .orElseThrow(() -> new IllegalArgumentException("없는 유저"));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(()->new IllegalArgumentException("없는 댓글"));
+        //게시글 아이디 검증
+        if(!comment.getPostId().equals(postId)) {
+            throw new IllegalArgumentException(
+                "잘못된 댓글 입니다"
+            );
+        }
+        //게시글 유저 검증
+        if(!comment.getUserId().equals(user.getId())){
+            throw new RuntimeException("권한이 없습니다");
+        }
+        comment.updateContent(commentRequest.getContent(),user.getUsername(),postId,user.getId());
+
+    }
+
+
+
+
+
 }

@@ -23,7 +23,13 @@ public class Comment {
     private String username;
     private Long postId;
     private Long userId;
-    public Comment(String content,String username,Long postId,Long userId){
+    public Comment(String content,String username,Long postId,Long userId) {
+        this.content = content;
+        this.username = username;
+        this.postId = postId;
+        this.userId = userId;
+    }
+    public void updateContent(String content,String username,Long postId,Long userId){
         this.content = content;
         this.username = username;
         this.postId = postId;
