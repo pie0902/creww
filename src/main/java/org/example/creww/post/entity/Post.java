@@ -11,8 +11,7 @@ import javax.persistence.Table;
 //import jakarta.persistence.GenerationType;
 //import jakarta.persistence.Id;
 //import jakarta.persistence.Table;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.creww.global.BaseEntity;
