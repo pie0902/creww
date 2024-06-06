@@ -8,12 +8,15 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.jwt.JwtUtils;
+import org.example.creww.notification.service.NotificationDomainService;
+import org.example.creww.notification.service.NotificationService;
 import org.example.creww.post.dto.PostRequest;
 import org.example.creww.post.dto.PostResponse;
 import org.example.creww.post.entity.Post;
 import org.example.creww.post.repository.PostRepository;
 import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
+import org.example.creww.userBoard.repository.UserBoardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -30,6 +33,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    private final NotificationDomainService notificationDomainService;
     //post 생성
     @Transactional
     public PostResponse createPost(
@@ -48,8 +52,15 @@ public class PostService {
         String username = userRepository.findById(tokenUserId).orElseThrow(()->new IllegalArgumentException("없는 유저")).getUsername();
         //post 객체 생성
         Post post = new Post(postRequest.getTitle(),postRequest.getContent(),tokenUserId,boardId);
-        //post 객체 저장
         postRepository.save(post);
+        // 저장 후 ID가 생성되었는지 확인
+        if (post.getId() == null) {
+            throw new RuntimeException("Failed to save the post, ID is null!");
+        }
+        //post 객체 저장
+
+
+        notificationDomainService.giveNotification(boardId,post.getId());
         //postResponse DTO 생성
         PostResponse postResponse = new PostResponse(post.getId(),post.getTitle(),post.getContent(),tokenUserId,username,post.getCreatedAt(),post.getViews());
         //postResponse DTO 반환

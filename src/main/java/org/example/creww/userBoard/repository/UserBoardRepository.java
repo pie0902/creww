@@ -10,4 +10,5 @@ public interface UserBoardRepository extends JpaRepository<UserBoard, Long> {
     List<UserBoard> findByUserId(Long userId);
     //soft delete
     List<UserBoard> findByUserIdAndIsExitedFalse(Long userId);
+    List<UserBoard> findByBoardIdAndIsExitedFalse(Long boardId);
 }
