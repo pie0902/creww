@@ -42,7 +42,6 @@ public class CommentController {
     @GetMapping("")
     public ResponseEntity<List<CommentResponse>> getComments(
         HttpServletRequest request,
-        @PathVariable Long boardId,
         @PathVariable Long postId
     ) {
         List<CommentResponse> commentResponses = commentService.getComments(request, postId);
