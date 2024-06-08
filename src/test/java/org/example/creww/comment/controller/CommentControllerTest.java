@@ -6,8 +6,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,7 +116,8 @@ class CommentControllerTest {
             new CommentResponse(2L, "test2", "tester2")
         );
 
-        when(commentService.getComments(any(HttpServletRequest.class), eq(postId))).thenReturn(commentResponses);
+        when(commentService.getComments(any(HttpServletRequest.class), eq(postId))).thenReturn(
+            commentResponses);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -131,6 +135,37 @@ class CommentControllerTest {
         System.out.println("Response Body: " + responseBody);
 
         verify(commentService, times(1)).getComments(any(HttpServletRequest.class), eq(postId));
+    }
+
+    @Test
+    @WithMockUser
+    @DisplayName("댓글 수정 테스트")
+    void updateComment() throws Exception {
+        Long commentId = 1L;
+        CommentRequest commentRequest = new CommentRequest("test");
+        mockMvc.perform(put("/api/boards/{boardId}/posts/{postId}/comments/{commentId}", boardId, postId,commentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commentRequest))
+                .with(csrf())
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(content().string("성공적으로 수정 됐습니다."));
+        verify(commentService, times(1)).updateComment(any(HttpServletRequest.class),eq(postId),eq(commentId),any(CommentRequest.class));
+    }
+
+
+    @Test
+    @WithMockUser
+    @DisplayName("댓글 삭제 테스트")
+    void deleteComment() throws Exception {
+        Long commentId = 1L;
+        // when
+        ResultActions resultActions = mockMvc.perform(delete("/api/boards/{boardId}/posts/{postId}/comments/{commentId}",boardId, postId,commentId) // delete 요청 보냄
+            .with(csrf())); // csrf 설정 통과
+
+        // then
+        resultActions.andExpect(status().isOk()); // 상태 코드 검증
+        verify(commentService, times(1)).deleteComment(any(HttpServletRequest.class),eq(postId),eq(commentId)); // deletePost 메소드가 1번 호출되었는지 검증
     }
 
 

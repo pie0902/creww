@@ -58,8 +58,6 @@ public class PostService {
             throw new RuntimeException("Failed to save the post, ID is null!");
         }
         //post 객체 저장
-
-
         notificationDomainService.giveNotification(boardId,post.getId());
         //postResponse DTO 생성
         PostResponse postResponse = new PostResponse(post.getId(),post.getTitle(),post.getContent(),tokenUserId,username,post.getCreatedAt(),post.getViews());
