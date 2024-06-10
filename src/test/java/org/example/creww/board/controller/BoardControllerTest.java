@@ -200,7 +200,7 @@ class BoardControllerTest {
 
         // then
         resultActions.andExpect(status().isOk()); // 상태 코드 검증
-        verify(boardService, times(1)).exitBoard(token, boardId); // deleteBoard 메소드가 1번 호출되었는지 검증
+        verify(boardService, times(1)).isExitBoard(token, boardId); // deleteBoard 메소드가 1번 호출되었는지 검증
     }
 // ========================================= 실패 =================================================
 @Test

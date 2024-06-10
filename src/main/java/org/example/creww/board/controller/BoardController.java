@@ -84,7 +84,7 @@ public class BoardController {
         HttpServletRequest request
     ){
         String token = jwtUtils.getTokenFromRequest(request);
-        boardService.exitBoard(token,boardId);
+        boardService.isExitBoard(token,boardId);
         return ResponseEntity.ok().body("게시판을 탈퇴 했습니다.");
     }
 

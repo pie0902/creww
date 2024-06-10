@@ -3,7 +3,6 @@ package org.example.creww.board.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.board.dto.BoardAddUserRequest;
 import org.example.creww.board.dto.BoardRequest;
@@ -68,6 +67,7 @@ public class BoardService {
         if (token == null || !jwtUtils.validateToken(token)) {
             throw new RuntimeException("Invalid token");
         }
+        //Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
         Board board = boardRepository.findById(boardId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판"));
         User user = userRepository.findById(board.getOwnerId())
@@ -99,13 +99,14 @@ public class BoardService {
     }
 
     //게시판 나가기
-    public void exitBoard(String token, Long boardId) {
+    public void isExitBoard(String token, Long boardId) {
         if (token == null || !jwtUtils.validateToken(token)) {
             throw new RuntimeException("Invalid token");
         }
         Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
         UserBoard userBoard = userBoardRepository.findByBoardIdAndUserId(boardId,userId).orElseThrow(()->new IllegalArgumentException("없는 테이블"));
         userBoard.setExited();
+        userBoardRepository.save(userBoard);  // 변경사항 저장
     }
 
 
