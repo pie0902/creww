@@ -2,10 +2,12 @@ package org.example.creww.notification.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -66,14 +68,15 @@ class NotificationControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("알림 조회")
-    void Notification_test() throws Exception {
+    @DisplayName("알림 가져오기 테스트")
+    void notification_test() throws Exception {
         // given
         List<Notification> notifications = Arrays.asList(
             new Notification(userId, "test message 1"),
             new Notification(userId, "test message 2")
         );
-        when(notificationService.getUserNotifications(any(HttpServletRequest.class))).thenReturn(notifications);
+        when(notificationService.getUserNotifications(any(HttpServletRequest.class))).thenReturn(
+            notifications);
 
         // when
         ResultActions resultActions = mockMvc.perform(get("/api/notifications")
@@ -92,5 +95,24 @@ class NotificationControllerTest {
 
         verify(notificationService, times(1)).getUserNotifications(any(HttpServletRequest.class));
     }
+    @Test
+    @WithMockUser
+    @DisplayName("알림 읽음 표시 테스트")
+    public void testMarkAsRead() throws Exception {
+        Long notificationId = 1L;
+
+        ResultActions resultActions = mockMvc.perform(post("/api/notifications/{notificationId}/read", notificationId)
+            .contentType(MediaType.APPLICATION_JSON)
+            .with(csrf())); // csrf 설정 통과
+
+        resultActions.andExpect(status().isNoContent());
+
+        // Verify that the service method was called
+        verify(notificationService).markAsRead(notificationId);
+    }
+
+
+
+
 }
 
