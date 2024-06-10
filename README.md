@@ -32,8 +32,8 @@ Creww 서비스는 아래 주소에서 사용 가능합니다:
 ![스크린샷 2024-06-01 오후 2 20 34](https://github.com/pie0902/creww/assets/47919911/1079cc39-4bc1-44f0-a61d-7d846750ae27)
 
 ## API 명세서
-![스크린샷 2024-06-01 오후 2 35 12](https://github.com/pie0902/creww/assets/47919911/0440fbf7-3adb-48bd-9c66-97276fed9923)
-
+![스크린샷 2024-06-10 오후 7 06 00](https://github.com/pie0902/creww/assets/47919911/9565b5e1-b708-4354-becf-fcb72f5d51e2)
+![스크린샷 2024-06-10 오후 7 05 44](https://github.com/pie0902/creww/assets/47919911/5a638f53-dc15-49e6-be39-c7ef433fab7c)
 
 
 
