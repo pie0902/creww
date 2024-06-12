@@ -9,14 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.jwt.JwtUtils;
 import org.example.creww.notification.service.NotificationDomainService;
-import org.example.creww.notification.service.NotificationService;
 import org.example.creww.post.dto.PostRequest;
 import org.example.creww.post.dto.PostResponse;
 import org.example.creww.post.entity.Post;
 import org.example.creww.post.repository.PostRepository;
 import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
-import org.example.creww.userBoard.repository.UserBoardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -119,6 +117,7 @@ public class PostService {
             throw new RuntimeException("권한이 없습니다.");
         }
         post.updatePost(postRequest.getTitle(),postRequest.getContent(),tokenUserId,boardId);
+        postRepository.save(post);
 
     }
 }
