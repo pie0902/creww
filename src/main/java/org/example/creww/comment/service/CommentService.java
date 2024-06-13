@@ -107,6 +107,7 @@ public class CommentService {
             throw new RuntimeException("권한이 없습니다");
         }
         comment.updateContent(commentRequest.getContent(),user.getUsername(),postId,user.getId());
+        commentRepository.save(comment);
 
     }
 
