@@ -22,6 +22,17 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build --no-daemon --no-build-cache
 
+      - name: Run tests with coverage
+        run: ./gradlew test jacocoTestReport
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./build/reports/jacoco/test/jacocoTestReport.xml
+          fail_ci_if_error: true
+          verbose: true
+
       - name: Build Docker image
         run: docker build -t thunder0902/creww-backend:test .
 
@@ -36,3 +47,51 @@ jobs:
 
       - name: Clean up Docker images
         run: docker rmi thunder0902/creww-backend:test
+
+
+
+
+
+
+
+
+
+
+#name: CI/CD Pipeline
+#on:
+#  push:
+#    branches:
+#      - test-cicd
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Check out code
+#        uses: actions/checkout@v2
+#
+#      - name: Set up JDK 8
+#        uses: actions/setup-java@v2
+#        with:
+#          java-version: '8'
+#          distribution: 'adopt'
+#
+#      - name: Verify Java version
+#        run: java -version
+#
+#      - name: Build with Gradle
+#        run: ./gradlew clean build --no-daemon --no-build-cache
+#
+#      - name: Build Docker image
+#        run: docker build -t thunder0902/creww-backend:test .
+#
+#      - name: Log in to Docker Hub
+#        env:
+#          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+#          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+#        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+#
+#      - name: Push Docker image
+#        run: docker push thunder0902/creww-backend:test
+#
+#      - name: Clean up Docker images
+#        run: docker rmi thunder0902/creww-backend:test
