@@ -55,11 +55,12 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: testdb
 
-      - name: Upload test report
-        uses: actions/upload-artifact@v2
+      - name: Upload Apk
+        uses: actions/upload-artifact@v3
         with:
-          name: test-report
-          path: build/reports/tests/test
+          name: android-artifact # Artifact 이름 지정
+          path: app/build/outputs/apk/release # 폴더 지정 : 이 폴더 아래의 모든 파일들이 하나의 artifact로 저장된다.
+
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
