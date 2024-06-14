@@ -15,7 +15,7 @@ public class TestConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/test_db");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/testdb");
         dataSource.setUsername("test_user");
         dataSource.setPassword("test_password");
 
