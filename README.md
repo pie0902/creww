@@ -1,11 +1,16 @@
+
+
 # CREWW PROJECT
 # Creww Backend
 Creww 서비스는 아래 주소에서 사용 가능합니다:
 [creww.duckdns.org](http://creww.duckdns.org)
 * Creww는 가정용 NAS 배포를 목적으로 한 게시판 서비스입니다.
 * 이 서비스는 사용자가 회원가입 및 로그인을 통해 게시판을 생성하고, 다른 사용자를 초대하여 게시글과 댓글을 작성할 수 있도록 합니다.
-## 사용 기술
+## Test Coverage
+[![codecov](https://codecov.io/gh/pie0902/creww/graph/badge.svg?token=ZPPC2DWXV1)](https://codecov.io/gh/pie0902/creww)<br>
+[![Test Coverage](https://codecov.io/gh/pie0902/creww/graphs/tree.svg?token=ZPPC2DWXV1)](https://codecov.io/gh/pie0902/creww)
 
+## 사용 기술
 ![Java](https://img.shields.io/badge/Java-8-blue)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.5.7-brightgreen)
 ![Spring](https://img.shields.io/badge/Spring-5.3.13-brightgreen)
