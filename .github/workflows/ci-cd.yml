@@ -53,7 +53,7 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: testdb
+          DB_NAME: creww
 
       - name: Upload Apk
         uses: actions/upload-artifact@v3
