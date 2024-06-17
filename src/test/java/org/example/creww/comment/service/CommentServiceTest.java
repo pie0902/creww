@@ -60,8 +60,7 @@ class CommentServiceTest {
     @DisplayName("댓글 생성 테스트")
     void createComment_test() {
         //given
-        when(jwtUtils.getTokenFromRequest(httpServletRequest)).thenReturn(token);
-        when(jwtUtils.isTokenValid(token)).thenReturn(true);
+        when(jwtUtils.validateTokenOrThrow(httpServletRequest)).thenReturn(token);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         CommentRequest commentRequest = new CommentRequest("test");
@@ -86,8 +85,7 @@ class CommentServiceTest {
         //given
         List<Comment> comments = Arrays.asList(comment);
         when(commentRepository.findByPostId(postId)).thenReturn(comments);
-        when(jwtUtils.getTokenFromRequest(httpServletRequest)).thenReturn(token);
-        when(jwtUtils.isTokenValid(token)).thenReturn(true);
+        when(jwtUtils.validateTokenOrThrow(httpServletRequest)).thenReturn(token);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         //when
@@ -103,8 +101,7 @@ class CommentServiceTest {
     @DisplayName("댓글 지우기 테스트")
     void deleteComment_test() {
         //given
-        when(jwtUtils.getTokenFromRequest(httpServletRequest)).thenReturn(token);
-        when(jwtUtils.isTokenValid(token)).thenReturn(true);
+        when(jwtUtils.validateTokenOrThrow(httpServletRequest)).thenReturn(token);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
         when(commentRepository.findById(comment.getId())).thenReturn(Optional.of(comment));
 
@@ -121,9 +118,9 @@ class CommentServiceTest {
     void updateComment() {
         //given
         CommentRequest commentRequest = new CommentRequest("update test");
-        when(jwtUtils.getTokenFromRequest(httpServletRequest)).thenReturn(token);
-        when(jwtUtils.isTokenValid(token)).thenReturn(true);
+        when(jwtUtils.validateTokenOrThrow(httpServletRequest)).thenReturn(token);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
+
         when(commentRepository.findById(comment.getId())).thenReturn(Optional.of(comment));
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
@@ -134,5 +131,7 @@ class CommentServiceTest {
         verify(commentRepository, times(1)).save(any(Comment.class));
         assertEquals(comment.getContent(), commentRequest.getContent());
     }
+
+
 
 }

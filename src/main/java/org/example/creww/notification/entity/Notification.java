@@ -8,6 +8,9 @@ import javax.persistence.Id;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
 @Entity
 @RequiredArgsConstructor
 @Getter
@@ -21,13 +24,28 @@ public class Notification {
     private boolean isRead = false;
     private LocalDateTime createdAt;
 
-
-    public Notification(Long userId,String message) {
+    public Notification(Long userId, String message) {
         this.userId = userId;
         this.message = message;
         this.createdAt = LocalDateTime.now();
     }
-    public void setIsRead(boolean yn){
-        this.isRead = yn;
+
+    public void setIsRead() {
+        this.isRead = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Notification that = (Notification) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

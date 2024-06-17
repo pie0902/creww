@@ -9,13 +9,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 //import jakarta.servlet.http.Cookie;
 //import jakarta.servlet.http.HttpServletRequest;
 import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Date;
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
+import org.example.creww.global.globalException.ApplicationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -62,7 +60,14 @@ public class JwtUtils {
         return null;
     }
 
-    public boolean isTokenValid(String token) {
-        return token != null && validateToken(token);
+
+    public String validateTokenOrThrow(HttpServletRequest request) {
+        String token = getTokenFromRequest(request);
+        if (token == null || !validateToken(token)) {
+            throw new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED);
+        }
+        else{
+            return token;
+        }
     }
 }

@@ -45,7 +45,7 @@ class UserServiceTest {
     private String token;
     private User user;
     private String encodedPassword;
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @BeforeEach
     void setUp() {
         token = "testToken";

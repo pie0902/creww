@@ -28,11 +28,7 @@ public class CommentService {
         Long postId,
         CommentRequest commentRequest
     ) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        //토큰 검증
-        if (!jwtUtils.isTokenValid(token)) {
-            throw new RuntimeException("토큰 이슈");
-        }
+        String token = jwtUtils.validateTokenOrThrow(request);
         //userId 추출해서 Long으로 변경
         Long tokenUserId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
         User user = userRepository.findById(tokenUserId)
@@ -46,11 +42,7 @@ public class CommentService {
     }
 
     public List<CommentResponse> getComments(HttpServletRequest request, Long postId) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        // 토큰 검증
-        if (!jwtUtils.isTokenValid(token)) {
-            throw new RuntimeException("토큰 이슈");
-        }
+        String token = jwtUtils.validateTokenOrThrow(request);
         List<Comment> comments = commentRepository.findByPostId(postId);
         return comments.stream().map(comment -> {
             String username = userRepository.findById(comment.getUserId())
@@ -61,11 +53,7 @@ public class CommentService {
     }
 
     public void deleteComment(HttpServletRequest request, Long commentId,Long postId) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        // 토큰 검증
-        if (!jwtUtils.isTokenValid(token)) {
-            throw new RuntimeException("토큰 이슈");
-        }
+        String token = jwtUtils.validateTokenOrThrow(request);
         //토큰 유저아이디 추출해서 Long type 으로 변경
         Long tokenUserId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
         // comment 객체 생성
@@ -86,11 +74,7 @@ public class CommentService {
         Long commentId,
         CommentRequest commentRequest
     ) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        //토큰 검증
-        if (!jwtUtils.isTokenValid(token)) {
-            throw new RuntimeException("토큰 이슈");
-        }
+        String token = jwtUtils.validateTokenOrThrow(request);
         //userId 추출해서 Long으로 변경
         Long tokenUserId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
         User user = userRepository.findById(tokenUserId)

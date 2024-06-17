@@ -37,6 +37,7 @@ dependencies {
     //jwt 관련 의존성
     implementation 'com.auth0:java-jwt:3.19.2'
     compileOnly 'org.projectlombok:lombok'
+
     //mysql
     runtimeOnly 'mysql:mysql-connector-java:8.0.29'
     annotationProcessor 'org.projectlombok:lombok'

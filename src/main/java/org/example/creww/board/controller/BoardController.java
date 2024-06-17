@@ -31,33 +31,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/boards")
 public class BoardController {
     private final BoardService boardService;
-    private final JwtUtils jwtUtils;
     @ApiOperation(value = "게시판 생성", notes = "게시판을 생성합니다.", tags = {"board-controller"})
     @PostMapping("/create")
     public ResponseEntity<String> createBoard(HttpServletRequest request, @RequestBody BoardRequest boardRequest) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        if (token == null || !jwtUtils.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-        Long creatorId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
-        boardService.createBoard(creatorId,boardRequest);
+        boardService.createBoard(request,boardRequest);
         return ResponseEntity.ok().body("성공적으로 보드가 생성 되었습니다");
     }
     @ApiOperation(value = "게시판 전체 조회", notes = "게시판을 전체 조회 합니다.", tags = {"board-controller"})
     @GetMapping("")
     public ResponseEntity<List<BoardResponse>> getBoards(HttpServletRequest request) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        List<BoardResponse> boards = boardService.getBoards(token);
+        List<BoardResponse> boards = boardService.getBoards(request);
         return ResponseEntity.ok().body(boards);
     }
     @ApiOperation(value = "게시판 단일 조회", notes = "게시판을 단일 조회 합니다.", tags = {"board-controller"})
     @GetMapping("/{boardId}")
     public ResponseEntity<BoardResponse> getBoard(
-        HttpServletRequest request,
         @PathVariable Long boardId
     ) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        BoardResponse boardResponse = boardService.getBoard(token,boardId);
+        BoardResponse boardResponse = boardService.getBoard(boardId);
         return ResponseEntity.ok().body(boardResponse);
     }
 
@@ -69,11 +60,7 @@ public class BoardController {
         @RequestBody BoardAddUserRequest boardAddUserRequest,
         @PathVariable Long boardId
     ) {
-        String token = jwtUtils.getTokenFromRequest(request);
-        if (token == null || !jwtUtils.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-        boardService.addUser(token,boardAddUserRequest,boardId);
+        boardService.addUser(request,boardAddUserRequest,boardId);
         return ResponseEntity.ok().body("성공적으로 초대가 되었습니다");
     }
 
@@ -83,8 +70,7 @@ public class BoardController {
         @PathVariable Long boardId,
         HttpServletRequest request
     ){
-        String token = jwtUtils.getTokenFromRequest(request);
-        boardService.isExitBoard(token,boardId);
+        boardService.isExitBoard(request,boardId);
         return ResponseEntity.ok().body("게시판을 탈퇴 했습니다.");
     }
 
@@ -99,9 +85,8 @@ public class BoardController {
         @PathVariable Long boardId,
         HttpServletRequest request
     ) {
-        String token = jwtUtils.getTokenFromRequest(request);
         try {
-            boardService.deleteBoard(token, boardId);
+            boardService.deleteBoard(request, boardId);
             return ResponseEntity.ok().body("게시글이 성공적으로 삭제 되었습니다");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
