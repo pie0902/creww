@@ -19,11 +19,14 @@ Creww 서비스는 아래 주소에서 사용 가능합니다:
 ![Swagger](https://img.shields.io/badge/Swagger-2.9.2-orange)
 ![JPA](https://img.shields.io/badge/JPA-2.2-blue)
 ![Docker](https://img.shields.io/badge/Docker-19.03.12-blue)
+![Docker Hub](https://img.shields.io/badge/Docker%20Hub-latest-blue)
 ![Nginx](https://img.shields.io/badge/Nginx-1.19.0-blue)
 ![MySQL](https://img.shields.io/badge/MySQL-5.7-blue)
 ![OpenMediaVault](https://img.shields.io/badge/OpenMediaVault-5.5.11-blue)
 ![Debian](https://img.shields.io/badge/Debian-11_(bullseye)-green)
-
+![Jacoco](https://img.shields.io/badge/Jacoco-0.8.7-red)
+![Codecov](https://img.shields.io/badge/Codecov-4.6.1-blue)
+![JUnit](https://img.shields.io/badge/JUnit-5.7.1-red)
 ## 기능 설명
 ### 회원가입 및 로그인
 회원가입: 계정 생성
