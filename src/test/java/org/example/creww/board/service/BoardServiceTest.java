@@ -3,6 +3,7 @@ package org.example.creww.board.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -42,6 +43,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class BoardServiceTest {
+
     @Mock
     private BoardRepository boardRepository;
 
@@ -67,11 +69,12 @@ class BoardServiceTest {
     private UserBoard userBoard;
 
     private HttpServletRequest request;
+
     @BeforeEach
     void setUp() {
         user = new User("test@test.com", "tester", "1234");
         ReflectionTestUtils.setField(user, "id", 1L);
-        user2 = new User("test2@test.com","tester2","1234");
+        user2 = new User("test2@test.com", "tester2", "1234");
         ReflectionTestUtils.setField(user2, "id", 2L);
         board = new Board("Test Board", "Test Description", user.getId());
         ReflectionTestUtils.setField(board, "id", 1L);
@@ -82,22 +85,25 @@ class BoardServiceTest {
         token = "testToken";
         request = mock(HttpServletRequest.class);
     }
-//    @Test
-//    @DisplayName("보드 생성 테스트")
-//    void createBoard_test() {
-//        // Given
-//        Long ownerId = 1L;
-//        when(jwtUtils.validateTokenOrThrow(request)).thenReturn("mockToken");
-//        when(jwtUtils.getUserIdFromToken("mockToken")).thenReturn(String.valueOf(ownerId));
-//        when(userRepository.existsById(any(Long.class))).thenReturn(true);
-//
-//        // When
-//        boardService.createBoard(request, boardRequest);
-//
-//        // Then
-//        verify(boardRepository).save(any(Board.class));
-//        verify(userBoardRepository, times(boardRequest.getUserIds().size() + 1)).save(any(UserBoard.class)); // Including owner
-//    }
+
+    @Test
+    @DisplayName("보드 생성 테스트")
+    void createBoard_test() {
+        // Given
+        String token = "validToken";
+        Long ownerId = 123L;
+        BoardRequest boardRequest = new BoardRequest("boardName", userIds, "description");
+        when(jwtUtils.validateTokenOrThrow(request)).thenReturn(token);
+        when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(ownerId));
+        when(userRepository.existsById(anyLong())).thenReturn(true); // 모든 사용자 ID가 존재한다고 가정
+
+        // When
+        boardService.createBoard(request, boardRequest);
+
+        // Then
+        verify(boardRepository).save(any(Board.class));
+        verify(userBoardRepository, times(3)).save(any(UserBoard.class));
+    }
 
     @Test
     @DisplayName("보드 조회 테스트")
@@ -128,11 +134,9 @@ class BoardServiceTest {
     }
 
 
-
-
     @Test
     @DisplayName("보드 단일 조회 테스트")
-    void getBoard(){
+    void getBoard() {
         //given
         Long boardId = board.getId();
         when(boardRepository.findById(1L)).thenReturn(Optional.of(board));
@@ -144,40 +148,10 @@ class BoardServiceTest {
         verify(boardRepository, times(1)).findById(boardId);
         verify(userRepository, times(1)).findById(user.getId());
 
-        assertEquals(1L,boardResponse.getId());
+        assertEquals(1L, boardResponse.getId());
         assertEquals("Test Board", boardResponse.getBoardName());
         assertEquals("Test Description", boardResponse.getDescription());
         assertEquals("tester", boardResponse.getOwnerName());
-    }
-
-    @Test
-    @DisplayName("단일보드 조회 실패")
-    public void getBoard_test(){
-        //given
-        Long boardId = 1L;
-        Mockito.when(boardRepository.findById(boardId)).thenReturn(Optional.empty());
-
-        //when, then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
-            boardService.getBoard(boardId);
-        });
-
-        assertEquals("존재하지 않는 게시판", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    }
-    @Test
-    @DisplayName("단일보드 조회 런타임 에러 테스트")
-    public void getBoard_runtimeError_test() {
-        //given
-        Long boardId = 1L;
-        Mockito.when(boardRepository.findById(boardId)).thenReturn(Optional.empty());
-
-        //when & then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
-            boardService.getBoard(boardId);
-        });
-        assertEquals("존재하지 않는 게시판", exception.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
 
@@ -204,62 +178,6 @@ class BoardServiceTest {
         verify(userRepository, times(1)).findAllById(userIds);
         verify(userBoardRepository, times(2)).save(any(UserBoard.class));
     }
-    @Test
-    @DisplayName("보드 유저 추가 토큰 오류")
-    void addUser_invalid_token_fail_test() {
-        //given
-        String testToken = "testToken2";
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        // Mock behavior for JWT validation and user ID retrieval
-        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
-
-        List<Long> testIds = Arrays.asList(5L, 6L);
-        BoardAddUserRequest boardAddUserRequest2 = new BoardAddUserRequest(testIds);
-
-        //when & then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
-            boardService.addUser(request, boardAddUserRequest2, 1L);
-        });
-
-        assertEquals("Invalid token", exception.getMessage());
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
-    }
-    @Test
-    @DisplayName("보드 유저 추가 토큰 null 오류 테스트")
-    void addUser_error_test() {
-        //given
-        Long boardId = 1L;
-        List<Long> userIds = Arrays.asList(2L, 3L);
-        BoardAddUserRequest boardAddUserRequest = new BoardAddUserRequest(userIds);
-
-        Mockito.when(jwtUtils.validateTokenOrThrow(request)).thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
-
-        //when & then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
-            boardService.addUser(request, boardAddUserRequest, boardId);
-        });
-        assertEquals("Invalid token", exception.getMessage());
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
-    }
-
-    @Test
-    @DisplayName("보드 유저 추가 토큰 인증 오류 테스트")
-    void addUser_error_test2() {
-        //given
-        Long boardId = 1L;
-        List<Long> userIds = Arrays.asList(2L, 3L);
-        BoardAddUserRequest boardAddUserRequest = new BoardAddUserRequest(userIds);
-
-        Mockito.when(jwtUtils.validateTokenOrThrow(request)).thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
-
-        //when & then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
-            boardService.addUser(request, boardAddUserRequest, boardId);
-        });
-        assertEquals("Invalid token", exception.getMessage());
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
-    }
 
 
     @Test
@@ -267,7 +185,8 @@ class BoardServiceTest {
     void isExitBoard_test() {
         //given
         Long boardId = board.getId();
-        when(userBoardRepository.findByBoardIdAndUserId(boardId, user.getId())).thenReturn(Optional.of(userBoard));
+        when(userBoardRepository.findByBoardIdAndUserId(boardId, user.getId())).thenReturn(
+            Optional.of(userBoard));
         when(jwtUtils.validateTokenOrThrow(request)).thenReturn(token);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
         //when
@@ -279,32 +198,6 @@ class BoardServiceTest {
         verify(userBoardRepository, times(1)).save(any(UserBoard.class));
     }
 
-    @Test
-    @DisplayName("보드 나가기 Invalid token fail")
-    void isExitBoard_Invalid_token_fail() {
-        //given
-        Long boardId = board.getId();
-        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
-        //when&then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
-            boardService.isExitBoard(request, boardId);
-        });
-        assertEquals("Invalid token", exception.getMessage());
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
-    }
-
-    @Test
-    @DisplayName("보드 나가기 validateToken 오류 테스트")
-    void isExitBoard_validateToken_error_test() {
-        Long boardId = board.getId();
-        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
-        //when & then
-        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
-            boardService.isExitBoard(request, boardId);
-        });
-        assertEquals("Invalid token", exception.getMessage());
-        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
-    }
 
     @Test
     @DisplayName("보드 삭제 테스트")
@@ -326,6 +219,94 @@ class BoardServiceTest {
         verify(boardRepository, times(1)).findById(boardId);
         verify(boardRepository, times(1)).delete(board);
         verify(userBoardRepository, times(1)).delete(userBoard);
+    }
+
+
+//    ===============================================실패 =======================================
+
+    @Test
+    @DisplayName("보드 생성 유저 찾기 오류")
+    void createBoard_error_test() {
+        // Given
+        String token = "mocked-token";
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        List<Long> testUserIds = new ArrayList<>(Arrays.asList(2L));  // ArrayList로 변경
+        BoardRequest boardRequest1 = new BoardRequest("test", testUserIds, "test");
+        when(jwtUtils.validateTokenOrThrow(request)).thenReturn(token);
+        Long ownerId = 1L;
+        when(jwtUtils.getUserIdFromToken(token)).thenReturn(ownerId.toString());
+
+        // Mock the userRepository to return false for the user ID check
+        when(userRepository.existsById(2L)).thenReturn(false);
+
+        // When
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.createBoard(request, boardRequest1);
+        });
+
+        // Then
+        assertEquals("User ID 2 does not exist", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    @DisplayName("단일보드 조회 실패")
+    public void getBoard_test() {
+        //given
+        Long boardId = 1L;
+        Mockito.when(boardRepository.findById(boardId)).thenReturn(Optional.empty());
+
+        //when, then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.getBoard(boardId);
+        });
+
+        assertEquals("존재하지 않는 게시판", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    @DisplayName("단일보드 조회 런타임 에러 테스트")
+    public void getBoard_runtimeError_test() {
+        //given
+        Long boardId = 1L;
+        Mockito.when(boardRepository.findById(boardId)).thenReturn(Optional.empty());
+
+        //when & then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.getBoard(boardId);
+        });
+        assertEquals("존재하지 않는 게시판", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    }
+
+    @Test
+    @DisplayName("보드 나가기 Invalid token fail")
+    void isExitBoard_Invalid_token_fail() {
+        //given
+        Long boardId = board.getId();
+        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(
+            new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
+        //when&then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.isExitBoard(request, boardId);
+        });
+        assertEquals("Invalid token", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+    }
+
+    @Test
+    @DisplayName("보드 나가기 validateToken 오류 테스트")
+    void isExitBoard_validateToken_error_test() {
+        Long boardId = board.getId();
+        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(
+            new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
+        //when & then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.isExitBoard(request, boardId);
+        });
+        assertEquals("Invalid token", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
     }
 
     @Test
@@ -379,7 +360,8 @@ class BoardServiceTest {
     @DisplayName("보드 삭제 Invalid token fail")
     void deleteBoard_Invalid_token_fail() {
         //given
-        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
+        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(
+            new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
         Long boardId = board.getId();
         //when & then
         ApplicationException exception = assertThrows(ApplicationException.class, () -> {
@@ -388,4 +370,85 @@ class BoardServiceTest {
         assertEquals("Invalid token", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
     }
+
+    @Test
+    @DisplayName("보드 유저 추가 토큰 null 오류 테스트")
+    void addUser_error_test() {
+        //given
+        Long boardId = 1L;
+        List<Long> userIds = Arrays.asList(2L, 3L);
+        BoardAddUserRequest boardAddUserRequest = new BoardAddUserRequest(userIds);
+
+        Mockito.when(jwtUtils.validateTokenOrThrow(request))
+            .thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
+
+        //when & then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.addUser(request, boardAddUserRequest, boardId);
+        });
+        assertEquals("Invalid token", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+    }
+
+    @Test
+    @DisplayName("보드 유저 추가 토큰 인증 오류 테스트")
+    void addUser_error_test2() {
+        //given
+        Long boardId = 1L;
+        List<Long> userIds = Arrays.asList(2L, 3L);
+        BoardAddUserRequest boardAddUserRequest = new BoardAddUserRequest(userIds);
+
+        Mockito.when(jwtUtils.validateTokenOrThrow(request))
+            .thenThrow(new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
+
+        //when & then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.addUser(request, boardAddUserRequest, boardId);
+        });
+        assertEquals("Invalid token", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+    }
+
+    @Test
+    @DisplayName("보드 유저 추가 토큰 오류")
+    void addUser_invalid_token_fail_test() {
+        //given
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        // Mock behavior for JWT validation and user ID retrieval
+        when(jwtUtils.validateTokenOrThrow(request)).thenThrow(
+            new ApplicationException("Invalid token", HttpStatus.UNAUTHORIZED));
+
+        List<Long> testIds = Arrays.asList(5L, 6L);
+        BoardAddUserRequest boardAddUserRequest2 = new BoardAddUserRequest(testIds);
+
+        //when & then
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.addUser(request, boardAddUserRequest2, 1L);
+        });
+
+        assertEquals("Invalid token", exception.getMessage());
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatus());
+    }
+
+    @Test
+    @DisplayName("유저 추가 반장이 아닐때 오류")
+    void addUser_owner_error_test() {
+        when(jwtUtils.validateTokenOrThrow(request)).thenReturn(token);
+        when(boardRepository.findById(user.getId())).thenReturn(Optional.of(board));
+        when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf("2"));
+        List<Long> userIds = Arrays.asList(5L, 6L);
+        BoardAddUserRequest boardAddUserRequest = new BoardAddUserRequest(userIds);
+
+
+        ApplicationException exception = assertThrows(ApplicationException.class, () -> {
+            boardService.addUser(request,boardAddUserRequest,board.getId());
+        });
+
+        assertEquals("방장만 회원 초대가 가능합니다.", exception.getMessage());
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatus());
+
+    }
+
+
 }

@@ -116,4 +116,8 @@ public class PostService {
         post.updatePost(postRequest.getTitle(), postRequest.getContent(), tokenUserId, boardId);
         postRepository.save(post);
     }
+
+
+
+
 }

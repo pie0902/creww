@@ -3,11 +3,13 @@ package org.example.creww.notification.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.example.creww.global.globalException.ApplicationException;
 import org.example.creww.post.entity.Post;
 import org.example.creww.post.repository.PostRepository;
 import org.example.creww.user.repository.UserRepository;
 import org.example.creww.userBoard.entity.UserBoard;
 import org.example.creww.userBoard.repository.UserBoardRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,9 +24,9 @@ public class NotificationDomainService {
     public void giveNotification(Long boardId, Long postId) {
         List<UserBoard> userList = userBoardRepository.findByBoardIdAndIsExitedFalse(boardId);
         Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 post"));
+            .orElseThrow(() -> new ApplicationException("존재하지 않는 post", HttpStatus.NOT_FOUND));
         String username = userRepository.findById(post.getUserId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 user")).getUsername();
+            .orElseThrow(() -> new ApplicationException("존재하지 않는 user",HttpStatus.NOT_FOUND)).getUsername();
         for (UserBoard user : userList) {
             notificationService.createNotification(user.getUserId(),
                 username + "님이 " + post.getTitle() + " 게시글을 작성 하셨습니다.");

@@ -116,7 +116,7 @@ class CommentControllerTest {
             new CommentResponse(2L, "test2", "tester2")
         );
 
-        when(commentService.getComments(any(HttpServletRequest.class), eq(postId))).thenReturn(
+        when(commentService.getComments(any(HttpServletRequest.class),eq(boardId),eq(postId))).thenReturn(
             commentResponses);
 
         // when
@@ -134,7 +134,7 @@ class CommentControllerTest {
         String responseBody = mvcResult.getResponse().getContentAsString();
         System.out.println("Response Body: " + responseBody);
 
-        verify(commentService, times(1)).getComments(any(HttpServletRequest.class), eq(postId));
+        verify(commentService, times(1)).getComments(any(HttpServletRequest.class),eq(boardId), eq(postId));
     }
 
     @Test
