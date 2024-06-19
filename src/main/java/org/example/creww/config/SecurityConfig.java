@@ -51,7 +51,9 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://localhost:3000"); // 개발 중인 로컬 호스트의 프론트엔드 주소
         config.addAllowedOrigin("http://localhost:3001"); // 필요한 경우 다른 로컬 개발 주소도 추가
         config.addAllowedOrigin("http://creww.duckdns.org"); // 프로덕션 환경 도메인 추가
-        config.addAllowedOrigin("https://creww.duckdns.org"); // HTTPS를 사용하는 경우 추가
+        config.addAllowedOrigin("https://creww.duckdns.org"); // HTTPS 사용하는 경우 추가
+
+
         config.addAllowedHeader("*"); // 모든 헤더 허용
         config.addAllowedMethod("*"); // 모든 HTTP 메소드 허용
         config.addExposedHeader("Authorization"); // Authorization 헤더 노출
