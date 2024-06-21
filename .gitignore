@@ -46,17 +46,7 @@ gradle-cache/
 gradle/wrapper/
 /Users/jongilyun/Desktop/Spring/my_project/creww/mysql-data
 /Users/jongilyun/Desktop/Spring/my_project/creww/backup.sql
-.gradle/6.8.3/
-.gradle/buildOutputCleanup/
-.gradle/checksums/
-.gradle/configuration-cache/
-.gradle/vcs-1/
 /Users/jongilyun/Desktop/Spring/my_project/creww/gradle
 gradle-cache/wrapper/dists/gradle-7.4-bin/c0gwcg53nkjbqw7r0h0umtfvt/gradle-7.4-bin.zip
-gradle-cache/
-*.zip
-*.jar
-gradle-cache/wrapper/dists/gradle-7.4-bin/c0gwcg53nkjbqw7r0h0umtfvt/gradle-7.4-bin.zip
-gradle-cache/
 *.zip
 *.jar
