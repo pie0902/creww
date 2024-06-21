@@ -56,3 +56,7 @@ gradle-cache/wrapper/dists/gradle-7.4-bin/c0gwcg53nkjbqw7r0h0umtfvt/gradle-7.4-b
 gradle-cache/
 *.zip
 *.jar
+gradle-cache/wrapper/dists/gradle-7.4-bin/c0gwcg53nkjbqw7r0h0umtfvt/gradle-7.4-bin.zip
+gradle-cache/
+*.zip
+*.jar
