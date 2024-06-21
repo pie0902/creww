@@ -42,9 +42,12 @@ echo "gradle-cache/" >> .gitignore
 # Docker Compose 파일 무시
 docker-compose.yml
 gradle-cache/
-gradle-cache/
 .gradle/
 gradle/wrapper/
-gradle-cache/
 mysql-data/
 /Users/jongilyun/Desktop/Spring/my_project/creww/backup.sql
+.gradle/6.8.3/
+.gradle/buildOutputCleanup/
+.gradle/checksums/
+.gradle/configuration-cache/
+.gradle/vcs-1/
