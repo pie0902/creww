@@ -46,3 +46,5 @@ gradle-cache/
 .gradle/
 gradle/wrapper/
 gradle-cache/
+mysql-data/
+/Users/jongilyun/Desktop/Spring/my_project/creww/backup.sql

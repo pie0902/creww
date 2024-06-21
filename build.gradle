@@ -38,7 +38,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     //mysql
-    runtimeOnly 'mysql:mysql-connector-java:8.0.29'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.27'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.0'
