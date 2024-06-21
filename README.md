@@ -4,8 +4,26 @@
 # Creww Backend
 Creww 서비스는 아래 주소에서 사용 가능합니다:
 [creww.duckdns.org](http://creww.duckdns.org)
+
 * Creww는 가정용 NAS 배포를 목적으로 한 게시판 서비스입니다.
 * 이 서비스는 사용자가 회원가입 및 로그인을 통해 게시판을 생성하고, 다른 사용자를 초대하여 게시글과 댓글을 작성할 수 있도록 합니다.
+<div style="display: flex; justify-content: space-around; align-items: flex-start;">
+  <div style="text-align: center; margin: 10px;">
+    <img src="https://github.com/pie0902/creww/assets/47919911/f9542cc8-2812-468e-ae1b-826ed443820c" alt="로그인" style="height: 200px;">
+    <p>로그인</p>
+  </div>
+  <div style="text-align: center; margin: 10px;">
+    <img src="https://github.com/pie0902/creww/assets/47919911/d3f7af6f-70b0-4beb-abfc-6661e3b1a78f" alt="회원가입" style="height: 200px;">
+    <p>회원가입</p>
+  </div>
+  <div style="text-align: center; margin: 10px;">
+    <img src="https://github.com/pie0902/creww/assets/47919911/b677bcda-b7f4-4055-812b-e5ebceca743c" alt="메인페이지" style="height: 200px;">
+    <p>메인페이지</p>
+  </div>
+</div>
+
+
+
 ## Test Coverage
 [![codecov](https://codecov.io/gh/pie0902/creww/graph/badge.svg?token=ZPPC2DWXV1)](https://codecov.io/gh/pie0902/creww)<br>
 [![Test Coverage](https://codecov.io/gh/pie0902/creww/graphs/tree.svg?token=ZPPC2DWXV1)](https://codecov.io/gh/pie0902/creww)

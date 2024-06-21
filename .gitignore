@@ -43,3 +43,6 @@ echo "gradle-cache/" >> .gitignore
 docker-compose.yml
 gradle-cache/
 gradle-cache/
+.gradle/
+gradle/wrapper/
+gradle-cache/
