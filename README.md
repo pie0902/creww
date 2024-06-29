@@ -74,6 +74,8 @@ Creww 서비스는 아래 주소에서 사용 가능합니다:
   </tr>
 </table>
 
+## Architecture Diagram
+![creww drawio (1)](https://github.com/pie0902/creww/assets/47919911/775300ba-c14a-4d3a-86ba-167aebe3306e)
 
 
 ## ERD diagram
