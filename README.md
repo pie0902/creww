@@ -7,21 +7,6 @@ Creww 서비스는 아래 주소에서 사용 가능합니다:
 
 * Creww는 가정용 NAS 배포를 목적으로 한 게시판 서비스입니다.
 * 이 서비스는 사용자가 회원가입 및 로그인을 통해 게시판을 생성하고, 다른 사용자를 초대하여 게시글과 댓글을 작성할 수 있도록 합니다.
-<div style="display: flex; justify-content: space-around; align-items: center;">
-  <div style="text-align: center; margin: 10px;">
-    <img src="https://github.com/pie0902/creww/assets/47919911/f9542cc8-2812-468e-ae1b-826ed443820c" alt="로그인" style="height: 350px;">
-    <p>로그인</p>
-  </div>
-  <div style="text-align: center; margin: 10px;">
-    <img src="https://github.com/pie0902/creww/assets/47919911/d3f7af6f-70b0-4beb-abfc-6661e3b1a78f" alt="회원가입" style="height: 350px;">
-    <p>회원가입</p>
-  </div>
-  <div style="text-align: center; margin: 10px;">
-    <img src="https://github.com/pie0902/creww/assets/47919911/b677bcda-b7f4-4055-812b-e5ebceca743c" alt="메인페이지" style="height: 350px;">
-    <p>메인페이지</p>
-  </div>
-</div>
-
 
 ## Test Coverage
 [![codecov](https://codecov.io/gh/pie0902/creww/graph/badge.svg?token=ZPPC2DWXV1)](https://codecov.io/gh/pie0902/creww)<br>
@@ -70,12 +55,38 @@ Creww 서비스는 아래 주소에서 사용 가능합니다:
 
 **각 기능은 로그인된 사용자만 이용할 수 있으며, 게시판의 생성자는 추가 관리 기능을 수행할 수 있습니다.** 
 
+## 홈페이지 미리보기
+
+<table style="width:100%;text-align: center;">
+  <tr>
+    <td>
+      <img src="https://github.com/pie0902/creww/assets/47919911/f9542cc8-2812-468e-ae1b-826ed443820c" alt="로그인" style="width:220px; height: 350px;">
+      <p>로그인 페이지</p>
+    </td>
+    <td>
+      <img src="https://github.com/pie0902/creww/assets/47919911/d3f7af6f-70b0-4beb-abfc-6661e3b1a78f" alt="회원가입" style="width:220px; height: 350px;">
+      <p>회원가입 페이지</p>
+    </td>
+    <td>
+      <img src="https://github.com/pie0902/creww/assets/47919911/b677bcda-b7f4-4055-812b-e5ebceca743c" alt="메인페이지" style="width:220px; height: 350px;">
+      <p>로그인 성공시 메인페이지</p>
+    </td>
+  </tr>
+</table>
+
+## Architecture Diagram
+![creww drawio (1)](https://github.com/pie0902/creww/assets/47919911/775300ba-c14a-4d3a-86ba-167aebe3306e)
+
+
 ## ERD diagram
 
 ![스크린샷 2024-06-10 오후 7 09 36](https://github.com/pie0902/creww/assets/47919911/e6729000-354e-490c-9a73-9731e72b71bc)
 ## API 명세서
 ![스크린샷 2024-06-10 오후 7 05 44](https://github.com/pie0902/creww/assets/47919911/5a638f53-dc15-49e6-be39-c7ef433fab7c)
 ![스크린샷 2024-06-10 오후 7 06 00](https://github.com/pie0902/creww/assets/47919911/9565b5e1-b708-4354-becf-fcb72f5d51e2)
+
+
+
 
 
 
