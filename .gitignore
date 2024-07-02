@@ -43,7 +43,7 @@ echo "gradle-cache/" >> .gitignore
 docker-compose.yml
 gradle-cache/
 .gradle/
-/Users/jongilyun/Desktop/Spring/my_project/creww/mysql-data
-/Users/jongilyun/Desktop/Spring/my_project/creww/backup.sql
+mysql-data
+backup.sql
 gradle-cache/wrapper/dists/gradle-7.4-bin/c0gwcg53nkjbqw7r0h0umtfvt/gradle-7.4-bin.zip
 

@@ -17,11 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final JwtUtils jwtUtils;
-    //알림 생성
-    public void createNotification(Long userId, String message) {
-        Notification notification = new Notification(userId,message);
-        notificationRepository.save(notification);
-    }
     //알림 조회
     public List<Notification> getUserNotifications(HttpServletRequest request) {
         String token = jwtUtils.validateTokenOrThrow(request);

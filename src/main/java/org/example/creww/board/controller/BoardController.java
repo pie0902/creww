@@ -2,7 +2,6 @@ package org.example.creww.board.controller;
 
 
 //import jakarta.servlet.http.HttpServletRequest;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +10,6 @@ import org.example.creww.board.dto.BoardAddUserRequest;
 import org.example.creww.board.dto.BoardRequest;
 import org.example.creww.board.dto.BoardResponse;
 import org.example.creww.board.service.BoardService;
-import org.example.creww.jwt.JwtUtils;
-import org.example.creww.userBoard.repository.UserBoardRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;

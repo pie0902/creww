@@ -10,10 +10,12 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @RequiredArgsConstructor
 @Getter
+@BatchSize(size = 30)
 public class Notification {
 
     @Id

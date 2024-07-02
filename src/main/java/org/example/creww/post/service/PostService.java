@@ -3,7 +3,11 @@ package org.example.creww.post.service;
 
 //import jakarta.servlet.http.Cookie;
 //import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -63,14 +67,28 @@ public class PostService {
         return postResponse;
     }
 // 포스트 전체 조회
+
     public Page<PostResponse> getPosts(Long boardId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Post> posts = postRepository.findByBoardId(boardId, pageable);
+        //모든 포스트의 userId 가져오기
+        Set<Long> userIds = new HashSet<>();
+        for(Post post : posts.getContent()){
+            userIds.add(post.getUserId());
+        }
+        //한번에 모두 조회
+        List<User> users = userRepository.findAllById(userIds);
+        Map<Long, String> userMap = new HashMap<>();
+        for (User user : users) {
+            userMap.put(user.getId(), user.getUsername());
+        }
+
+        //posts에서 각 post의 userId를 사용하여 해당 사용자의 이름을 찾음
+        //post의 데이터와 찾은 사용자 이름을 사용하여 새로운 Page<PostRespons>를 생성
         return posts.map(post -> {
-         String username = userRepository.findById(post.getUserId())
-             .map(User::getUsername)
-             .orElse("유저 없음");
-         return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getUserId(), username, post.getCreatedAt(),post.getViews());
+            String username = userMap.getOrDefault(post.getUserId(), "유저 없음");
+            return new PostResponse(post.getId(), post.getTitle(), post.getContent(),
+                post.getUserId(), username, post.getCreatedAt(), post.getViews());
         });
     }
     // 포스트 단일 조회

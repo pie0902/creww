@@ -1,11 +1,15 @@
 package org.example.creww.board.service;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.creww.board.dto.BoardAddUserRequest;
+import org.example.creww.board.dto.BoardDetailsDTO;
 import org.example.creww.board.dto.BoardRequest;
 import org.example.creww.board.dto.BoardResponse;
 import org.example.creww.board.entity.Board;
@@ -16,7 +20,6 @@ import org.example.creww.user.entity.User;
 import org.example.creww.user.repository.UserRepository;
 import org.example.creww.userBoard.entity.UserBoard;
 import org.example.creww.userBoard.repository.UserBoardRepository;
-import org.hibernate.boot.model.naming.IllegalIdentifierException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,33 +43,25 @@ public class BoardService {
         boardRepository.save(board);
 
         // Collect user IDs, including the owner
-        List<Long> userIds = req.getUserIds();
+        List<Long> userIds = new ArrayList<>(req.getUserIds());
         userIds.add(ownerId);
-
-        // Add users to the board
-        for (Long userId : userIds) {
-            if (userRepository.existsById(userId)) {
-                UserBoard userBoard = new UserBoard(userId, board.getId());
-                userBoardRepository.save(userBoard);
-            } else {
-                throw new ApplicationException("User ID " + userId + " does not exist", HttpStatus.NOT_FOUND);
-            }
+        // 모든 유저 체크
+        List<Long> existingUserIds = userRepository.findAllUserIdsByIdIn(userIds);
+        if(existingUserIds.size() != userIds.size()){
+            Set<Long> nonExistingUserIds = new HashSet<>(userIds);
+            nonExistingUserIds.removeAll(existingUserIds);
+            throw new ApplicationException("User IDs"+nonExistingUserIds + "do not exist",HttpStatus.NOT_FOUND);
         }
     }
 
     public List<BoardResponse> getBoards(HttpServletRequest request) {
         String token = jwtUtils.validateTokenOrThrow(request);
         Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
-        List<UserBoard> userBoards = userBoardRepository.findByUserIdAndIsExitedFalse(userId);
-        return userBoards.stream()
-            .map(userBoard -> {
-                Board board = boardRepository.findById(userBoard.getBoardId())
-                    .orElseThrow(() -> new ApplicationException("Board does not exist", HttpStatus.NOT_FOUND));
-                User user = userRepository.findById(board.getOwnerId())
-                    .orElseThrow(() -> new ApplicationException("없는 유저", HttpStatus.NOT_FOUND));
-                String ownerName = user.getUsername();
-                return new BoardResponse(board.getName(), board.getId(), board.getDescription(), ownerName);
-            })
+
+        List<BoardDetailsDTO> boardDetails = userBoardRepository.findBoardsWithOwnerByUserId(userId);
+
+        return boardDetails.stream()
+            .map(dto -> new BoardResponse(dto.getName(), dto.getBoardId(), dto.getDescription(), dto.getOwnerName()))
             .collect(Collectors.toList());
     }
 
@@ -81,19 +76,35 @@ public class BoardService {
     @Transactional
     public void addUser(HttpServletRequest request, BoardAddUserRequest boardAddUserRequest, Long boardId) {
         String token = jwtUtils.validateTokenOrThrow(request);
-        Board board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new ApplicationException("존재하지 않는 보드", HttpStatus.NOT_FOUND));
         Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+        Board board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new ApplicationException("존재하지 않는 보드입니다.",HttpStatus.NOT_FOUND));
         if (!board.getOwnerId().equals(userId)) {
-            throw new ApplicationException("방장만 회원 초대가 가능합니다.", HttpStatus.FORBIDDEN);
+            throw new ApplicationException("방장만 회원 초대가 가능합니다.",HttpStatus.FORBIDDEN);
+        }
+        List<Long> requestedUserIds = boardAddUserRequest.getUserIds();
+        List<User> existingUsers = userRepository.findAllById(requestedUserIds);
+        List<Long> existingUserIds = existingUsers.stream().map(User::getId).collect(Collectors.toList());
+
+
+        // 존재하지 않는 사용자 ID 확인
+        List<Long> nonExistingUserIds = requestedUserIds.stream()
+            .filter(id -> !existingUserIds.contains(id))
+            .collect(Collectors.toList());
+        if (!nonExistingUserIds.isEmpty()) {
+            throw new ApplicationException("존재하지 않는 사용자: " + nonExistingUserIds,HttpStatus.NOT_FOUND);
         }
 
-        List<Long> userIds = boardAddUserRequest.getUserIds();
-        List<Long> existingUserIds = userRepository.findAllById(userIds).stream().map(User::getId)
-            .collect(Collectors.toList());
-        for (Long id : existingUserIds) {
-            UserBoard userBoard = new UserBoard(id, board.getId());
-            userBoardRepository.save(userBoard);
+        // 이미 초대된 사용자 제외
+        List<Long> alreadyInvitedUserIds = userBoardRepository.findByBoardId(boardId)
+            .stream().map(UserBoard::getUserId).collect(Collectors.toList());
+        existingUserIds.removeAll(alreadyInvitedUserIds);
+
+        if (!existingUserIds.isEmpty()) {
+            List<UserBoard> userBoards = existingUserIds.stream()
+                .map(id -> new UserBoard(id, boardId))
+                .collect(Collectors.toList());
+            userBoardRepository.saveAll(userBoards);
         }
     }
 
