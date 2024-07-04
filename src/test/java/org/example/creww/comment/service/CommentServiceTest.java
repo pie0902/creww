@@ -51,6 +51,7 @@ class CommentServiceTest {
     private HttpServletRequest httpServletRequest;
     private Comment comment;
     private String token;
+    private CommentResponse commentResponse;
     @BeforeEach
     void setUp() {
         postId = 1L;
@@ -61,6 +62,8 @@ class CommentServiceTest {
         httpServletRequest = mock(HttpServletRequest.class);
         comment = new Comment("test", user.getUsername(), postId, user.getId());
         ReflectionTestUtils.setField(comment, "id", 1L);
+        commentResponse = new CommentResponse(1L,"댓글",user.getUsername());
+
     }
 
     @Test
@@ -92,21 +95,21 @@ class CommentServiceTest {
         UserBoard userBoard = new UserBoard(user.getId(),boardId);
         ReflectionTestUtils.setField(userBoard,"id",1L);
         //given
-        List<Comment> comments = Arrays.asList(comment);
-        when(commentRepository.findByPostId(postId)).thenReturn(comments);
+        List<CommentResponse> commentResponses = Arrays.asList(commentResponse);
+        when(commentRepository.findByPostId(postId)).thenReturn(commentResponses);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
         when(jwtUtils.validateTokenOrThrow(httpServletRequest)).thenReturn(token);
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(userBoardRepository.findByBoardIdAndUserId(boardId,user.getId())).thenReturn(Optional.of(userBoard));
 
         //when
-        List<CommentResponse> commentResponses = commentService.getComments(httpServletRequest,boardId,
+        List<CommentResponse> commentResponseList = commentService.getComments(httpServletRequest,boardId,
             postId);
 
         //then
-        assertEquals(commentResponses.get(0).getUsername(), comments.get(0).getUsername());
-        assertEquals(commentResponses.get(0).getId(), comments.get(0).getId());
-        assertEquals(commentResponses.get(0).getContent(), comments.get(0).getContent());
+        assertEquals(commentResponseList.get(0).getUsername(), commentResponses.get(0).getUsername());
+        assertEquals(commentResponseList.get(0).getId(), commentResponses.get(0).getId());
+        assertEquals(commentResponseList.get(0).getContent(), commentResponses.get(0).getContent());
     }
     @Test
     @DisplayName("댓글 지우기 테스트")

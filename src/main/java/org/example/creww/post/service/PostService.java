@@ -49,9 +49,7 @@ public class PostService {
         String token = jwtUtils.validateTokenOrThrow(request);
         //userId 추출해서 Long으로 변경
         Long tokenUserId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
-        String username = userRepository.findById(tokenUserId)
-            .orElseThrow(() -> new ApplicationException("없는 유저", HttpStatus.NOT_FOUND))
-            .getUsername();
+        String username = userRepository.findUsernameById(tokenUserId).orElseThrow(()->new ApplicationException("없는 사용자 입니다.",HttpStatus.NOT_FOUND));
         //post 객체 생성
         Post post = new Post(postRequest.getTitle(),postRequest.getContent(),tokenUserId,boardId);
         postRepository.save(post);

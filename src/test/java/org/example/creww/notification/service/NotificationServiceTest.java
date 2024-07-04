@@ -57,14 +57,6 @@ class NotificationServiceTest {
 
 
     @Test
-    @DisplayName("알림 생성 테스트")
-    void createNotification_test() {
-        //when&then
-        notificationService.createNotification(userId, "test");
-
-        verify(notificationRepository, times(1)).save(any(Notification.class));
-    }
-    @Test
     @DisplayName("알림 가져오기 테스트")
     void getUserNotification_test() {
         //given

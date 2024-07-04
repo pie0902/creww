@@ -47,21 +47,15 @@ public class CommentService {
             comment.getUsername());
 
     }
-
+    //댓글 전체 조회
     public List<CommentResponse> getComments(HttpServletRequest request,Long boardId, Long postId) {
         String token = jwtUtils.validateTokenOrThrow(request);
         Long tokenUserId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
         // 사용자 보드 권한 확인
         userBoardRepository.findByBoardIdAndUserId(boardId, tokenUserId)
             .orElseThrow(() -> new ApplicationException("접근 권한이 없습니다", HttpStatus.FORBIDDEN));
-
-        List<Comment> comments = commentRepository.findByPostId(postId);
-        return comments.stream().map(comment -> {
-            String username = userRepository.findById(comment.getUserId())
-                .map(User::getUsername)
-                .orElse("Unknown User");
-            return new CommentResponse(comment.getId(), comment.getContent(), username);
-        }).collect(Collectors.toList());
+        List<CommentResponse> comments = commentRepository.findByPostId(postId);
+        return comments;
     }
 
     public void deleteComment(HttpServletRequest request, Long commentId,Long postId) {

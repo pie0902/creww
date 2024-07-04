@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByEmail(String email);
+
+    @Query("SELECT u.username FROM User u WHERE u.id = :id")
+    Optional<String> findUsernameById(@Param("id") Long id);
     List<User> findByEmailContaining(String email);
 
     @Query("SELECT u.id FROM User u WHERE u.id IN :userIds")
