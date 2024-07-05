@@ -95,11 +95,10 @@ class CommentServiceTest {
         UserBoard userBoard = new UserBoard(user.getId(),boardId);
         ReflectionTestUtils.setField(userBoard,"id",1L);
         //given
-        List<CommentResponse> commentResponses = Arrays.asList(commentResponse);
-        when(commentRepository.findByPostId(postId)).thenReturn(commentResponses);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
         when(jwtUtils.validateTokenOrThrow(httpServletRequest)).thenReturn(token);
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        List<CommentResponse> commentResponses = Arrays.asList(commentResponse);
+        when(commentRepository.findByPostId(postId)).thenReturn(commentResponses);
         when(userBoardRepository.findByBoardIdAndUserId(boardId,user.getId())).thenReturn(Optional.of(userBoard));
 
         //when

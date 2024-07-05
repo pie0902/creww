@@ -1,5 +1,7 @@
 package org.example.creww.notification.service;
 
+import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
 import org.example.creww.global.globalException.ApplicationException;
 import org.example.creww.notification.entity.Notification;
 import org.example.creww.notification.repository.NotificationRepository;
@@ -37,10 +39,12 @@ class NotificationDomainServiceTest {
     @Mock
     PostRepository postRepository;
     @Mock
+    NotificationService notificationService;
+    @Mock
     UserRepository userRepository;
     @Mock
     NotificationRepository notificationRepository;
-
+    private HttpServletRequest httpServletRequest;
     private Long boardId;
     private String username;
     private User user;
@@ -51,6 +55,7 @@ class NotificationDomainServiceTest {
 
     @BeforeEach
     void setUp() {
+        httpServletRequest = mock(HttpServletRequest.class);
         boardId = 1L;
         username = "tester";
         user = new User("test@test.com", "tester", "1234");
@@ -95,48 +100,47 @@ class NotificationDomainServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 포스트")
-    void getNotification_null_post_test(){
-        Long boardId = 1L;
-        Long userId =1L;
-        Post post = new Post("test","test",userId,boardId);
-        ReflectionTestUtils.setField(post,"id",1L);
-        User user = new User("test@test.com","tester","1234");
-        ReflectionTestUtils.setField(user,"id",1L);
-        UserBoard userBoard = new UserBoard(1L,1L);
-        List<UserBoard> userBoards = Arrays.asList(userBoard);
-        when(userBoardRepository.findByBoardIdAndIsExitedFalse(boardId)).thenReturn(userBoards);
-        when(postRepository.findById(post.getId())).thenReturn(Optional.empty());
+    @DisplayName("게시글이 없을 때 예외 발생 테스트")
+    void giveNotification_postNotFound_test() {
+        // Given
+        Long postId = 1L;
+        when(postRepository.findPostWithUserById(postId)).thenReturn(Optional.empty());
 
-        ApplicationException applicationException = assertThrows(ApplicationException.class,()-> {
-            notificationDomainService.giveNotification(boardId,post.getId());
-        });
-
-        assertEquals("존재하지 않는 post",applicationException.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND,applicationException.getStatus());
-
+        // When & Then
+        ApplicationException exception = assertThrows(ApplicationException.class, () ->
+            notificationDomainService.giveNotification(1L, postId)
+        );
+        assertEquals("게시글 없음", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
     @Test
-    @DisplayName("존재하지 않는 유저")
-    void getNotification_null_user_test(){
+    @DisplayName("notificationRepository가 null일 때 예외 발생 테스트")
+    void giveNotification_notificationRepositoryNull_test() {
+        // Given
         Long boardId = 1L;
-        Long userId =1L;
-        Post post = new Post("test","test",userId,boardId);
-        ReflectionTestUtils.setField(post,"id",1L);
-        User user = new User("test@test.com","tester","1234");
-        ReflectionTestUtils.setField(user,"id",1L);
-        UserBoard userBoard = new UserBoard(1L,1L);
-        List<UserBoard> userBoards = Arrays.asList(userBoard);
-        when(userBoardRepository.findByBoardIdAndIsExitedFalse(boardId)).thenReturn(userBoards);
-        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        Long postId = 1L;
+        PostWithUser postWithUser = new PostWithUser(postId, "test title", user.getId(), user.getUsername());
+        List<Long> userIds = Arrays.asList(1L, 2L);
 
-        ApplicationException applicationException = assertThrows(ApplicationException.class,()-> {
-            notificationDomainService.giveNotification(boardId,post.getId());
-        });
+        when(postRepository.findPostWithUserById(postId)).thenReturn(Optional.of(postWithUser));
+        when(userBoardRepository.findUserIdsByBoardIdAndIsExitedFalse(boardId)).thenReturn(userIds);
 
-        assertEquals("존재하지 않는 user",applicationException.getMessage());
-        assertEquals(HttpStatus.NOT_FOUND,applicationException.getStatus());
+        // notificationRepository를 null로 설정
+        ReflectionTestUtils.setField(notificationDomainService, "notificationRepository", null);
+
+        // When & Then
+        ApplicationException exception = assertThrows(ApplicationException.class, () ->
+            notificationDomainService.giveNotification(boardId, postId)
+        );
+        assertEquals("notificationRepository is null", exception.getMessage());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatus());
+
+        // 다시 원래의 notificationRepository로 복원
+        ReflectionTestUtils.setField(notificationDomainService, "notificationRepository", notificationRepository);
+
+        // Verify
+        verify(postRepository).findPostWithUserById(postId);
+        verify(userBoardRepository).findUserIdsByBoardIdAndIsExitedFalse(boardId);
     }
 
 }

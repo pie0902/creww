@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.expression.spel.ast.OpPlus;
 
-public interface UserBoardRepository extends JpaRepository<UserBoard, Long> {
+public interface UserBoardRepository extends JpaRepository<UserBoard, Long> , UserBoardRepositoryCustom{
 
     Optional<UserBoard> findByBoardIdAndUserId(Long boardId, Long userId);
 

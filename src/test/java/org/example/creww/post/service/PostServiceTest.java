@@ -4,13 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -34,8 +35,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {
@@ -56,6 +58,7 @@ class PostServiceTest {
 
     private String token;
     private User user;
+    private User user2;
     private Board board;
     private Post post;
     private PostRequest postRequest;
@@ -66,14 +69,19 @@ class PostServiceTest {
     void setUp() {
         user = new User("test@test.com", "tester", "1234");
         ReflectionTestUtils.setField(user, "id", 1L);
+        user2 = new User("test2@test.com", "tester2", "1234");
+        ReflectionTestUtils.setField(user2, "id", 2L);
+
         board = new Board("Test Board", "Test Description", user.getId());
         ReflectionTestUtils.setField(board, "id", 1L);
-        token = "testToken";
+
         post = new Post("title", "content", user.getId(), board.getId());
         ReflectionTestUtils.setField(post, "id", 1L);
+
         postRequest = new PostRequest("title", "content");
         postResponse = new PostResponse(1L, "title", "content", user.getId(), user.getUsername(),
             LocalDateTime.now(), 0);
+
         request = mock(HttpServletRequest.class);
     }
 
@@ -84,7 +92,7 @@ class PostServiceTest {
         Long boardId = board.getId();
         when(jwtUtils.validateTokenOrThrow(request)).thenReturn(token);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findUsernameById(user.getId())).thenReturn(Optional.of(user.getUsername()));
 
         when(postRepository.save(any(Post.class))).thenAnswer(invocation -> {
             Post savedPost = invocation.getArgument(0);
@@ -112,7 +120,7 @@ class PostServiceTest {
         //given
         when(jwtUtils.validateTokenOrThrow(request)).thenReturn(token);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(user.getId()));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findUsernameById(user.getId())).thenReturn(Optional.of(user.getUsername()));
 
         when(postRepository.save(any(Post.class))).thenAnswer(invocation -> {
             Post savedPost = invocation.getArgument(0);
@@ -150,34 +158,41 @@ class PostServiceTest {
         assertEquals(HttpStatus.UNAUTHORIZED, updatePostException.getStatus());
     }
 
+
+
+
+
     @Test
     @DisplayName("포스트 전체 조회 테스트")
     void getPosts_test() {
         // given
-        int page = 0; // 페이지 번호는 0부터 시작
+        int page = 0;
         int size = 1;
+        Pageable pageable = PageRequest.of(page, size);
+        List<Post> postList = Arrays.asList(post);
+        Page<Post> posts = new PageImpl<>(postList, pageable, postList.size());
 
-        List<Post> posts = Collections.singletonList(new Post("title", "content", user.getId(), board.getId()));
-        Page<Post> postPage = new PageImpl<>(posts, PageRequest.of(page, size), posts.size());
+        // 유저 관련
+        List<User> users = Arrays.asList(user);
 
-        when(postRepository.findByBoardId(board.getId(), PageRequest.of(page, size)))
-            .thenReturn(postPage);
-
-        when(userRepository.findById(posts.get(0).getUserId()))
-            .thenReturn(Optional.of(new User(user.getEmail(), user.getUsername(), user.getPassword())));
+        // 레포지토리
+        when(postRepository.findByBoardId(eq(board.getId()), eq(pageable))).thenReturn(posts);
+        when(userRepository.findAllById(any())).thenReturn(users);
 
         // when
-        Page<PostResponse> postResponses = postService.getPosts(board.getId(), page, size);
+        Page<PostResponse> result = postService.getPosts(board.getId(), page, size);
 
         // then
-        assertEquals(1, postResponses.getTotalElements());
-        PostResponse postResponse = postResponses.getContent().get(0);
+        verify(postRepository).findByBoardId(eq(board.getId()), eq(pageable));
+        verify(userRepository).findAllById(any());
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        PostResponse postResponse = result.getContent().get(0);
         assertEquals("title", postResponse.getTitle());
         assertEquals("content", postResponse.getContent());
-        assertEquals("tester", postResponse.getUsername());
-
-        verify(postRepository, times(1)).findByBoardId(board.getId(), PageRequest.of(page, size));
-        verify(userRepository, times(1)).findById(posts.get(0).getUserId());
+        assertEquals(post.getUserId(), postResponse.getUserId());
+        assertEquals(user.getUsername(), postResponse.getUsername());
     }
 
     @Test

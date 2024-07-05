@@ -16,12 +16,11 @@ import java.util.List;
 public class NotificationRepositoryImpl implements NotificationRepositoryCustom{
 
     private final JdbcTemplate jdbcTemplate;
-    private final EntityManager entityManager;
+
 
     @Autowired
-    public NotificationRepositoryImpl(JdbcTemplate jdbcTemplate, EntityManager entityManager) {
+    public NotificationRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.entityManager = entityManager;
     }
 
     @Override

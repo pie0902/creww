@@ -32,7 +32,7 @@ public class BoardService {
     private final UserRepository userRepository;
     private final UserBoardRepository userBoardRepository;
     private final JwtUtils jwtUtils;
-
+    //
     @Transactional
     public void createBoard(HttpServletRequest request, BoardRequest req) {
         String token = jwtUtils.validateTokenOrThrow(request);
@@ -47,11 +47,20 @@ public class BoardService {
         userIds.add(ownerId);
         // 모든 유저 체크
         List<Long> existingUserIds = userRepository.findAllUserIdsByIdIn(userIds);
-        if(existingUserIds.size() != userIds.size()){
+        if(existingUserIds.size() != userIds.size()) {
             Set<Long> nonExistingUserIds = new HashSet<>(userIds);
             nonExistingUserIds.removeAll(existingUserIds);
-            throw new ApplicationException("User IDs"+nonExistingUserIds + "do not exist",HttpStatus.NOT_FOUND);
+            throw new ApplicationException("User IDs" + nonExistingUserIds + "do not exist",
+                HttpStatus.NOT_FOUND);
         }
+        // Create UserBoard objects
+        List<UserBoard> userBoards = userIds.stream()
+            .map(userId -> new UserBoard(userId, board.getId()))
+            .collect(Collectors.toList());
+
+        // Bulk insert UserBoard entities
+        userBoardRepository.bulkInsert(userBoards);
+
     }
 
     public List<BoardResponse> getBoards(HttpServletRequest request) {
@@ -99,7 +108,7 @@ public class BoardService {
         List<Long> alreadyInvitedUserIds = userBoardRepository.findByBoardId(boardId)
             .stream().map(UserBoard::getUserId).collect(Collectors.toList());
         existingUserIds.removeAll(alreadyInvitedUserIds);
-
+        // 초대할 사용자가 있으면 초대함
         if (!existingUserIds.isEmpty()) {
             List<UserBoard> userBoards = existingUserIds.stream()
                 .map(id -> new UserBoard(id, boardId))
