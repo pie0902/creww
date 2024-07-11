@@ -1,6 +1,9 @@
 package org.example.creww.notification.service;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.example.creww.global.globalException.ApplicationException;
 import org.example.creww.notification.entity.Notification;
@@ -16,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +29,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -39,9 +44,7 @@ class NotificationDomainServiceTest {
     @Mock
     PostRepository postRepository;
     @Mock
-    NotificationService notificationService;
-    @Mock
-    UserRepository userRepository;
+    private Map<Long, SseEmitter> emitters;
     @Mock
     NotificationRepository notificationRepository;
     private HttpServletRequest httpServletRequest;
@@ -65,27 +68,68 @@ class NotificationDomainServiceTest {
         postWithUser = new PostWithUser(post.getId(), post.getTitle(), user.getId(), username);
         notification = new Notification(1L, "게시글이 생성 되었습니다");
         userIds = Arrays.asList(1L);
+        ReflectionTestUtils.setField(notificationDomainService, "emitters", emitters);
     }
+
+//    @Test
+//    @DisplayName("알림 가져오기 테스트")
+//    void getNotification_test() {
+//        // Given
+//        assertNotNull(postRepository);
+//
+//        when(userBoardRepository.findUserIdsByBoardIdAndIsExitedFalse(boardId)).thenReturn(userIds);
+//        when(postRepository.findPostWithUserById(anyLong())).thenReturn(Optional.of(postWithUser));
+//        doNothing().when(notificationRepository).bulkInsert(any());
+//
+//        // When & Then
+//        assertDoesNotThrow(() -> notificationDomainService.giveNotification(boardId, post.getId()));
+//
+//        // Verify
+//        verify(postRepository).findPostWithUserById(anyLong());
+//        verify(userBoardRepository).findUserIdsByBoardIdAndIsExitedFalse(boardId);
+//        verify(notificationRepository).bulkInsert(any());
+//    }
 
     @Test
     @DisplayName("알림 가져오기 테스트")
     void getNotification_test() {
         // Given
-        assertNotNull(postRepository);
+        Long boardId = 1L;
+        Long postId = 1L;
+        PostWithUser postWithUser = new PostWithUser(postId, "Test Post", 1L, "testUser");
+        List<Long> userIds = Arrays.asList(1L, 2L, 3L);
+        String expectedMessage = "testUser님이 Test Post 게시글을 작성하셨습니다.";
+        Map<Long, Long> userNotificationCounts = new HashMap<>();
+        userNotificationCounts.put(1L, 5L);
+        userNotificationCounts.put(2L, 3L);
+        userNotificationCounts.put(3L, 1L);
 
+        when(postRepository.findPostWithUserById(postId)).thenReturn(Optional.of(postWithUser));
         when(userBoardRepository.findUserIdsByBoardIdAndIsExitedFalse(boardId)).thenReturn(userIds);
-        when(postRepository.findPostWithUserById(anyLong())).thenReturn(Optional.of(postWithUser));
-        doNothing().when(notificationRepository).bulkInsert(any());
+        when(notificationRepository.countNewNotificationsByUserIds(userIds)).thenReturn(userNotificationCounts);
 
-        // When & Then
-        assertDoesNotThrow(() -> notificationDomainService.giveNotification(boardId, post.getId()));
+        // When
+        notificationDomainService.giveNotification(boardId, postId);
 
-        // Verify
-        verify(postRepository).findPostWithUserById(anyLong());
+        // Then
+        verify(postRepository).findPostWithUserById(postId);
         verify(userBoardRepository).findUserIdsByBoardIdAndIsExitedFalse(boardId);
-        verify(notificationRepository).bulkInsert(any());
-    }
 
+        ArgumentCaptor<List<Notification>> notificationsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(notificationRepository).bulkInsert(notificationsCaptor.capture());
+
+        List<Notification> capturedNotifications = notificationsCaptor.getValue();
+        assertEquals(userIds.size(), capturedNotifications.size());
+
+        for (Notification notification : capturedNotifications) {
+            assertTrue(userIds.contains(notification.getUserId()));
+            assertEquals(expectedMessage, notification.getMessage());
+        }
+
+        verify(notificationRepository).countNewNotificationsByUserIds(userIds);
+
+        // sendNotification과 sendNotificationCount 메소드 호출 확인은 불가능하므로 생략
+    }
     @Test
     @DisplayName("게시글이 없을 때 예외 발생 테스트")
     void getNotification_postNotFound_test() {

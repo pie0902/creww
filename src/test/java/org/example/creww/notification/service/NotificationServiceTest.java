@@ -103,4 +103,23 @@ class NotificationServiceTest {
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
     }
 
+    @Test
+    @DisplayName("모든 알림을 읽음 상태로 표시")
+    public void markAsReadAll_test() {
+        // Given
+        String token = "mockToken";
+        Long userId = 1L;
+
+        when(jwtUtils.validateTokenOrThrow(request)).thenReturn(token);
+        when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(userId));
+
+        // When
+        notificationService.markAsReadAll(request);
+
+        // Then
+        verify(jwtUtils).validateTokenOrThrow(request);
+        verify(jwtUtils).getUserIdFromToken(token);
+        verify(notificationRepository).markAllAsReadByUserId(userId);
+    }
+
 }

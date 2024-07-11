@@ -31,5 +31,9 @@ public class NotificationService {
         notification.setIsRead();
     }
 
-
+    public void markAsReadAll(HttpServletRequest request) {
+        String token = jwtUtils.validateTokenOrThrow(request);
+        Long userId = Long.parseLong(jwtUtils.getUserIdFromToken(token));
+        notificationRepository.markAllAsReadByUserId(userId);
+    }
 }
