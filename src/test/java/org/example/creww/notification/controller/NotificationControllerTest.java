@@ -1,17 +1,24 @@
 package org.example.creww.notification.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +28,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.example.creww.jwt.JwtUtils;
 import org.example.creww.notification.entity.Notification;
+import org.example.creww.notification.service.NotificationDomainService;
 import org.example.creww.notification.service.NotificationService;
 import org.example.creww.post.dto.PostRequest;
 import org.example.creww.post.dto.PostResponse;
@@ -39,6 +47,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @WebMvcTest(NotificationController.class)
 @ActiveProfiles("test")
@@ -50,6 +59,8 @@ class NotificationControllerTest {
 
     @MockBean
     private NotificationService notificationService;
+    @MockBean
+    private NotificationDomainService notificationDomainService;
 
     @MockBean
     private JwtUtils jwtUtils;
@@ -65,6 +76,7 @@ class NotificationControllerTest {
         when(jwtUtils.getTokenFromRequest(any(HttpServletRequest.class))).thenReturn(token);
         when(jwtUtils.validateToken(token)).thenReturn(true);
         when(jwtUtils.getUserIdFromToken(token)).thenReturn(String.valueOf(userId));
+
     }
 
     @Test
@@ -111,9 +123,22 @@ class NotificationControllerTest {
         // Verify that the service method was called
         verify(notificationService).markAsRead(notificationId);
     }
+    @Test
+    @WithMockUser
+    @DisplayName("알림 모두 읽기 테스트")
+    void markAsReadAll_test() throws Exception {
+        // given
+        doNothing().when(notificationService).markAsReadAll(any(HttpServletRequest.class));
 
+        // when
+        ResultActions resultActions = mockMvc.perform(put("/api/notifications/readAll")
+            .with(csrf()));
 
+        // then
+        resultActions
+            .andExpect(status().isNoContent());
 
-
+        verify(notificationService, times(1)).markAsReadAll(any(HttpServletRequest.class));
+    }
 }
 
